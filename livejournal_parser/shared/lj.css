@@ -1,0 +1,22 @@
+/* Styles for reproducing the appearance of <lj user="foo"> tags on
+   LiveJournal.com. Here's the code they use:
+   
+   <span class='ljuser' lj:user='jace' style='white-space: nowrap;'><a
+   href='http://jace.livejournal.com/profile'><img
+   src='http://l-stat.livejournal.com/img/userinfo.gif' alt='[info]' width='17'
+   height='17' style='vertical-align: bottom; border: 0; padding-right: 1px;'
+   /></a><a href='http://jace.livejournal.com/'><b>jace</b></a></span> */
+
+span.livejournal {
+    white-space: nowrap;
+}
+
+span.livejournal a {
+    font-weight: bold;
+}
+
+span.livejournal img {
+    vertical-align: bottom;
+    border: 0;
+    padding-right: 1px;
+}
