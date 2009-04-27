@@ -1,0 +1,33 @@
+{% extends "admin/layout.html" %}
+{% block title %}{{ _("Import from LiveJournal") }}{% endblock %}
+{% block html_head %}
+  {{ super() }}
+  <style type="text/css"><!--
+  .livejournal #f_username {
+      background: #fff url(http://www.livejournal.com/img/userinfo.gif) no-repeat 1px 50%;
+      padding-left: 18px;
+      font-weight: bold;
+      color: #00C;
+  }
+
+  .livejournal #f_community {
+      background: #fff url(http://www.livejournal.com/img/community.gif) no-repeat 1px 50%;
+      padding-left: 18px;
+      font-weight: bold;
+      color: #00C;
+  }
+  --></style>
+{% endblock %}
+{% block contents %}
+  <h1>{{ _("Import from LiveJournal") }}</h1>
+  <p>{% trans %}
+    This importer allows you to import posts and comments from your LiveJournal
+    journal or community into your new Zine blog.
+  {% endtrans %}</p>
+  {% call form() %}
+    <div class="livejournal">{{ form.as_dl() }}</div>
+    <div class="actions">
+      <input type="submit" value="{{ _('Import') }}">
+    </div>
+  {% endcall %}
+{% endblock %}
