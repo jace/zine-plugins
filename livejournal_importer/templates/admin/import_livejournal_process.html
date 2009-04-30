@@ -4,7 +4,7 @@
   <h1>{{ _("Importing from LiveJournal") }}</h1>
   <p>{% trans %}
     The importer is connecting to LiveJournal to retrieve your data.
-    This can take some time. <strong>Don’t close this window!</strong>
+    This will take some time. <strong>Don’t close this window!</strong>
   {% endtrans %}</p>
   {% for event in live_log %}{{ event }}{% endfor %}
   <p>{% trans importpage=url_for('admin/import')|e %}

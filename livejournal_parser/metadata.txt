@@ -3,7 +3,8 @@ Plugin URL: http://bitbucket.org/jace/zine-plugins/
 Author: Kiran Jonnalagadda <jace@pobox.com>
 Author URL: http://jace.seacrow.com/
 License: BSD
-Version: 0.1
+Version: 0.2
 Description: This plugin parses LiveJournal markup. It converts newlines into\
- line break tags and converts &lt;lj user="foo"&gt; tags to links to their\
- LiveJournal pages. Other LJ tags are not supported.
+ line break tags; converts &lt;lj user="foo"&gt; tags to links to their\
+ LiveJournal pages; avoids converting markup within <lj-raw> sections; and \
+ converts up to the first <lj-cut> tag into a Zine <intro> section.

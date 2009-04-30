@@ -24,6 +24,11 @@
     This importer allows you to import posts and comments from your LiveJournal
     journal or community into your new Zine blog.
   {% endtrans %}</p>
+  <p>{%trans %}
+    LiveJournal stores posts without a timezone, with whatever date and time the
+    user provided, while comments are in UTC. This importer will set the
+    timezone for posts to this blog's configured timezone.
+  {% endtrans %}</p>
   {% call form() %}
     <div class="livejournal">{{ form.as_dl() }}</div>
     <div class="actions">
