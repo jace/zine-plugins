@@ -21,18 +21,17 @@ allowed_tags = {
                                                     'form', 'input', 'select')])
     }
 
-ljuser_re = re.compile(r'''<lj\s+(user|comm)\s*=\s*"?'?(\w+)"?'?\s*>''', re.U)
+ljuser_re = re.compile(r'''<lj\s+(user|comm)\s*=\s*"?'?(\w+)"?'?\s*>''', re.U | re.I)
 tag_re = re.compile(r'</?(\w+).*?/?>', re.IGNORECASE | re.UNICODE)
 ljcut_re = re.compile(r'</?lj-cut.*?>', re.IGNORECASE | re.UNICODE)
-url_re = re.compile(r'''(^|>)([^<]*)(https?|ftp|irc|mailto):(.*?)(:?;?,?\.?[\s\'\"\(\)\[\]<>])''', re.U)
+url_re = re.compile(r'''(^|>)([^<]*)(https?|ftp|irc|mailto):(.*?)(:?;?,?\.?[\s\'\"\(\)\[\]\{\}<>])''', re.U)
 
 #: http://www.livejournal.com/support/faqbrowse.bml?faqid=26
 ljrawtag_re = re.compile(r'<lj-raw>', re.IGNORECASE | re.UNICODE)
-ljraw1_re = re.compile(r'(^|</lj-raw>)(.*?)<lj-raw>',
+ljraw1_re = re.compile(r'(^|</lj-raw>)(.*?)(<lj-raw>)',
                        re.IGNORECASE | re.UNICODE | re.DOTALL)
-ljraw2_re = re.compile(r'</lj-raw>(.*?)(<lj-raw>|$)',
+ljraw2_re = re.compile(r'(</lj-raw>)(.*?)(<lj-raw>|$)',
                        re.IGNORECASE | re.UNICODE | re.DOTALL)
-ljraw3_re = re.compile(r'(.*)(.*), re.UNICODE | re.DOTALL')
 
 def split_intro(text, reason='entry'):
     """
@@ -66,49 +65,55 @@ def htmlize_markup(input_data, reason):
     Convert LiveJournal markup to HTML. Returns tuple of intro and body.
 
     >>> htmlize_markup(u'This is some\\ntext here.', 'comment')
-    ('', u'This is some<br>text here.')
+    (u'', u'This is some<br>text here.')
 
     >>> htmlize_markup(u'More\\r\\ntext.', 'comment')
-    ('', u'More<br>text.')
+    (u'', u'More<br>text.')
 
     >>> htmlize_markup(u'Double\\n\\nbreak.', 'comment')
-    ('', u'Double<br><br>break.')
+    (u'', u'Double<br><br>break.')
 
     >>> htmlize_markup(u'This is <b>boldly</b> allowed.', 'comment')
-    ('', u'This is <b>boldly</b> allowed.')
+    (u'', u'This is <b>boldly</b> allowed.')
 
     >>> htmlize_markup(u'Type here: <input type="text" name="password">', 'entry')
-    ('', u'Type here: <input type="text" name="password">')
+    (u'', u'Type here: <input type="text" name="password">')
 
     >>> htmlize_markup(u'Type here: <input type="text" name="password">', 'comment')
-    ('', u'Type here: ')
+    (u'', u'Type here: ')
 
     >>> htmlize_markup(u'Welcome <lj-cut>home.', 'entry')
     (u'Welcome ', u'home.')
 
     >>> htmlize_markup(u'Welcome <lj-cut>home.', 'comment')
-    ('', u'Welcome home.')
+    (u'', u'Welcome home.')
 
     >>> htmlize_markup(u'Cut\\nme <lj-raw>cut\\nme\\nnot</lj-raw>', 'comment')
-    ('', u'Cut<br>me cut\\nme\\nnot')
+    (u'', u'Cut<br>me cut\\nme\\nnot')
 
     >>> htmlize_markup(u'Cut\\nme <lj-raw>cut\\nme\\nnot</lj-raw>\\ncut', 'comment')
-    ('', u'Cut<br>me cut\\nme\\nnot<br>cut')
+    (u'', u'Cut<br>me cut\\nme\\nnot<br>cut')
 
-    >>> htmlize_markup('Say hi to <lj user="jace">.', 'comment')
-    ('', u'Say hi to <span class="livejournal"><a href="http://jace.livejournal.com/profile"><img width="17" alt="[info]" src="http://l-stat.livejournal.com/img/userinfo.gif" height="17"></a><a href="http://jace.livejournal.com/">jace</a></span>.')
+    >>> htmlize_markup(u'Say hi to <lj user="jace">.', 'comment')
+    (u'', u'Say hi to <span class="livejournal"><a href="http://jace.livejournal.com/profile"><img width="17" alt="[info]" src="http://l-stat.livejournal.com/img/userinfo.gif" height="17"></a><a href="http://jace.livejournal.com/">jace</a></span>.')
 
-    >>> htmlize_markup('<lj user=jace>!', 'comment')
-    ('', u'<span class="livejournal"><a href="http://jace.livejournal.com/profile"><img width="17" alt="[info]" src="http://l-stat.livejournal.com/img/userinfo.gif" height="17"></a><a href="http://jace.livejournal.com/">jace</a></span>!')
+    >>> htmlize_markup(u'<lj user=jace>!', 'comment')
+    (u'', u'<span class="livejournal"><a href="http://jace.livejournal.com/profile"><img width="17" alt="[info]" src="http://l-stat.livejournal.com/img/userinfo.gif" height="17"></a><a href="http://jace.livejournal.com/">jace</a></span>!')
 
-    >>> htmlize_markup('<lj user="hi_there">!', 'comment')
-    ('', u'<span class="livejournal"><a href="http://hi-there.livejournal.com/profile"><img width="17" alt="[info]" src="http://l-stat.livejournal.com/img/userinfo.gif" height="17"></a><a href="http://hi-there.livejournal.com/">hi_there</a></span>!')
+    >>> htmlize_markup(u'<lj user="hi_there">!', 'comment')
+    (u'', u'<span class="livejournal"><a href="http://hi-there.livejournal.com/profile"><img width="17" alt="[info]" src="http://l-stat.livejournal.com/img/userinfo.gif" height="17"></a><a href="http://hi-there.livejournal.com/">hi_there</a></span>!')
 
-    >>> htmlize_markup('<lj user="_oh_my_">', 'comment')
-    ('', u'<span class="livejournal"><a href="http://users.livejournal.com/_oh_my_/profile"><img width="17" alt="[info]" src="http://l-stat.livejournal.com/img/userinfo.gif" height="17"></a><a href="http://users.livejournal.com/_oh_my_/">_oh_my_</a></span>')
+    >>> htmlize_markup(u'<lj user="_oh_my_">', 'comment')
+    (u'', u'<span class="livejournal"><a href="http://users.livejournal.com/_oh_my_/profile"><img width="17" alt="[info]" src="http://l-stat.livejournal.com/img/userinfo.gif" height="17"></a><a href="http://users.livejournal.com/_oh_my_/">_oh_my_</a></span>')
 
-    >>> htmlize_markup('<lj comm="bangalore">', 'comment')
-    ('', u'<span class="livejournal"><a href="http://community.livejournal.com/bangalore/profile"><img width="16" alt="[info]" src="http://l-stat.livejournal.com/img/community.gif" height="16"></a><a href="http://community.livejournal.com/bangalore/">bangalore</a></span>')
+    >>> htmlize_markup(u'<lj comm="bangalore">', 'comment')
+    (u'', u'<span class="livejournal"><a href="http://community.livejournal.com/bangalore/profile"><img width="16" alt="[info]" src="http://l-stat.livejournal.com/img/community.gif" height="16"></a><a href="http://community.livejournal.com/bangalore/">bangalore</a></span>')
+
+    >>> htmlize_markup(u'link http://example.com/ but not <lj-raw> this http://example.com/ </lj-raw> but this http://example.com', 'comment')
+    (u'', u'link <a href="http://example.com/">http://example.com/</a> but not  this http://example.com/  but this <a href="http://example.com">http://example.com</a>')
+
+    >>> htmlize_markup(u'<lj-raw>skip me</lj-raw> http://example.com/', 'entry')
+    (u'', u'skip me <a href="http://example.com/">http://example.com/</a>')
     """
     def _makeuserlink(matchobj):
         ljtype = matchobj.group(1)
@@ -154,22 +159,21 @@ def htmlize_markup(input_data, reason):
 
 
     def _convertnewlines(matchobj):
-        return url_re.sub(_makelinks,
-                matchobj.group(1).replace('\r\n', '\n').replace('\n',
-                    '<br>') + matchobj.group(2).replace('\r\n',
-                        '\n').replace('\n', '<br>'))
+        return url_re.sub(_makelinks, matchobj.group(1) +
+                          matchobj.group(2).replace('\r\n', '\n').replace(
+                              '\n', '<br>') + matchobj.group(3))
 
     intro, body = split_intro(input_data, reason)
     if ljrawtag_re.search(intro):
         intro = ljraw2_re.sub(_convertnewlines,
-                ljraw1_re.sub(_convertnewlines, intro))
+                              ljraw1_re.sub(_convertnewlines, intro))
     else:
-        intro = re.sub(r'(?s)(.*)()', _convertnewlines, intro)
+        intro = re.sub(r'(?s)()(.*)()', _convertnewlines, intro)
     if ljrawtag_re.search(body):
         body = ljraw2_re.sub(_convertnewlines,
-                ljraw1_re.sub(_convertnewlines, body))
+                            ljraw1_re.sub(_convertnewlines, body))
     else:
-        body = re.sub(r'(?s)(.*)()', _convertnewlines, body)
+        body = re.sub(r'(?s)()(.*)()', _convertnewlines, body)
 
     intro = tag_re.sub(_checktag,
         ljuser_re.sub(_makeuserlink, intro))
@@ -191,6 +195,8 @@ class LiveJournalParser(BaseParser):
     ... ''', 'entry').to_html()
     ...
     u'<intro><strong>Step 1: Preparation</strong><br><a href=".."><img src="test.jpg"></a><br></intro><strong>Step 2: Demonstration!</strong><br>'
+    >>> l.parse(u'This is just a comment.', 'comment').to_html()
+    u'This is just a comment.'
     """
 
     name = _(u'LiveJournal')
@@ -205,17 +211,18 @@ class LiveJournalParser(BaseParser):
         intro = sanitize(parse_zeml(intro_t))
         body = sanitize(parse_zeml(body_t))
         # The following complicated procedure is required only because
-        # Zine provides no way to cast RootElement objects (which intro
-        # and body are) into Element objects (which intro needs to become)
-        newintro = Element('intro')
-        newintro.children.extend(intro.children)
-        newintro.text = intro.text
-        for child in newintro.children:
-            child.parent = newintro
-        body.children.insert(0, newintro)
-        newintro.parent = body
-        newintro.tail = body.text
-        body.text = u''
+        # Zine provides no way to cast RootElement objects (which `intro`
+        # and `body` are) into Element objects (which `intro` needs to become)
+        if intro_t:
+            newintro = Element('intro')
+            newintro.children.extend(intro.children)
+            newintro.text = intro.text
+            for child in newintro.children:
+                child.parent = newintro
+            body.children.insert(0, newintro)
+            newintro.parent = body
+            newintro.tail = body.text
+            body.text = u''
         return body
 
 
