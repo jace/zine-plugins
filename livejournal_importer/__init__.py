@@ -1,7 +1,7 @@
 import os.path
 import re
 import xmlrpclib
-from werkzeug import url_unquote_plus, escape
+from werkzeug import url_unquote_plus, escape, unescape
 try: from hashlib import md5
 except ImportError: from md5 import new as md5
 from time import strptime, sleep
@@ -10,7 +10,7 @@ from lxml import etree
 from pytz import UTC
 from zine.api import *
 from zine.importers import Importer, Blog, Tag, Category, Author, Post, Comment
-from zine.i18n import get_timezone
+from zine.i18n import to_blog_timezone, get_timezone
 from zine.utils import forms, log
 from zine.utils.validators import ValidationError, check
 from zine.utils.admin import flash
@@ -35,6 +35,9 @@ IMPORT_COMMUNITY_ALL=3
 
 SECURITY_DISCARD=1
 SECURITY_PUBLIC=2
+
+ljuser_re = re.compile(r'''<lj\s+(user|comm)\s*=\s*"?'?(\w+)"?'?\s*>''', re.U | re.I)
+tag_re = re.compile(r'</?(\w+).*?/?>', re.IGNORECASE | re.UNICODE)
 
 
 def is_valid_lj_user(message=None):
@@ -202,7 +205,7 @@ def parse_lj_date(value):
         result = datetime(*(strptime(value, '%Y-%m-%d %H:%M:%S')[:6]))
     except ValueError:
         result = datetime(*(strptime(value, '%Y-%m-%d%H:%M:%S')[:6]))
-    return result.replace(tzinfo=get_timezone())
+    return result # Don't attach timezone here.
 
 
 class LiveJournalImporter(Importer):
@@ -249,23 +252,24 @@ class LiveJournalImporter(Importer):
 
         # Process implemented as per
         # http://www.livejournal.com/doc/server/ljp.csp.entry_downloading.html
-        lastsync = '1900-01-01 00:00:00'
-        yield _(u'<p>Getting metadata... ')
+        yield _(u'<ul>')
+        yield _(u'<li>Getting metadata...</li>')
         result = lj.syncitems()
         sync_items = []
         sync_total = int(result['total'])
-        yield _(u'%d items... ') % sync_total
+        yield _(u'<li>%d items...</li>') % sync_total
         sync_items.extend(result['syncitems'])
         while len(sync_items) < sync_total:
             lastsync = max([parse_lj_date(item['time']) for item in sync_items]
                           ).strftime('%Y-%m-%d %H:%M:%S')
-            yield _(u'got %d items up to %s... ') % (len(sync_items), lastsync)
+            yield _(u'<li>Got %d items up to %s...</li>') % (len(sync_items), lastsync)
             result = lj.syncitems(lastsync=lastsync)
             sync_items.extend(result['syncitems'])
-        yield _(u'got all %d items.</p>') % len(sync_items)
-        # Discard non-journal items.
+        yield _(u'<li>Got all %d items.</li>') % len(sync_items)
+        yield _(u'</ul>')
+        #: Discard non-journal items.
         sync_items = [i for i in sync_items if i['item'].startswith('L-')]
-        yield _(u'<p>Downloading <strong>%d</strong> entries...</p>') % sync_total
+        yield _(u'<p>Downloading <strong>%d</strong> entries...</p>') % len(sync_items)
         # Track what items we need to get
         sync_data = {}
         for item in sync_items:
@@ -310,8 +314,10 @@ class LiveJournalImporter(Importer):
                 subject = item.get('subject', '')
                 if isinstance(subject, xmlrpclib.Binary):
                     subject = subject.data
-                subject = str(subject)
-                subject = unicode(subject, 'utf-8')
+                subject = unicode(str(subject), 'utf-8')
+                #: LiveJournal subjects may contain HTML tags. Strip them and
+                #: convert HTML entities to Unicode equivalents.
+                subject = unescape(tag_re.sub('', ljuser_re.sub('\\2', subject)))
                 poster = item.get('poster', username)
                 if poster != username and import_what != IMPORT_COMMUNITY_ALL:
                     # Discard, since we don't want this.
@@ -339,7 +345,10 @@ class LiveJournalImporter(Importer):
                             u'%s</li>') % subject
                     continue
                 # Import as public post
-                pub_date = parse_lj_date(item['eventtime'])
+                #: Read time as local timezone and then convert to UTC. Zine
+                #: doesn't seem to like non-UTC timestamps in imports.
+                pub_date = get_timezone().localize(parse_lj_date(
+                    item['eventtime'])).astimezone(UTC)
                 itemtags = [t.strip() for t in unicode(item['props'].get(
                                             'taglist', ''), 'utf-8').split(',')]
                 while '' in itemtags: itemtags.remove('')
@@ -367,7 +376,15 @@ class LiveJournalImporter(Importer):
                 extras['lj_post_id'] = item['itemid']
                 extras['original_url'] = item['url']
                 posts[item['itemid']] = Post(
-                    slug=gen_timestamped_slug(gen_slug(subject) or item['itemid'],
+                    #: Generate slug. If there's no subject, use '-'+itemid.
+                    #: Why the prefix? Because if the user wants %year%/%month%/
+                    #: for the post url format and we end up creating a slug
+                    #: like 2003/12/1059, it will conflict with the archive
+                    #: access path format of %Y/%m/%d and the post will become
+                    #: inaccessible, since archive paths take higher priority
+                    #: to slugs in zine's urls.py.
+                    slug=gen_timestamped_slug(gen_slug(subject) or
+                                              ('-' + str(item['itemid'])),
                                               'entry', pub_date),
                     title=subject,
                     link=item['url'],
@@ -388,7 +405,7 @@ class LiveJournalImporter(Importer):
                                                         'html' or 'livejournal',
                     extra=extras
                     )
-                yield _(u'<li>%s <em>(by %s)</em></li>') % (subject, poster)
+                yield _(u'<li>%s <em>(by %s on %s)</em></li>') % (subject, poster, pub_date)
             # Done processing batch.
             yield _(u'</ol>')
             sync_left = [sync_data[x] for x in sync_data
@@ -489,9 +506,9 @@ class LiveJournalImporter(Importer):
                     if datetag is None: # Deleted comments have no date
                         pub_date = None
                     else:
-                        pub_date = datetime(*(strptime(comment.find('date').text,
-                                                       '%Y-%m-%dT%H:%M:%SZ')[:6]))
-                        pub_date.replace(tzinfo=UTC)
+                        pub_date = UTC.localize(datetime(*(strptime(
+                                                    comment.find('date').text,
+                                                    '%Y-%m-%dT%H:%M:%SZ')[:6])))
                     remote_addr = None
                     if comment.find('property'):
                         for property in comment.find('property'):
@@ -511,6 +528,7 @@ class LiveJournalImporter(Importer):
                         status = info['state'],
                     )
                     postid = int(comment.attrib['jitemid'])
+                    c_info[c_id]['postid'] = postid
                     if postid in posts:
                         posts[postid].comments.append(comments[c_id])
                     else:
@@ -520,8 +538,35 @@ class LiveJournalImporter(Importer):
                                 ) % (c_id, postid)
                 c_startid = max(comments.keys()) + 1
                 yield _(u'</ol>')
+            # Calculate timestamps for deleted comments.
+            yield _(u'<p>Guessing timestamps for deleted comments...</p>')
+            sortedcomments = comments.keys()
+            sortedcomments.sort()
+            totalcomments = len(sortedcomments)
+            for counter in range(totalcomments):
+                comment = comments[sortedcomments[counter]]
+                if comment.pub_date is None:
+                    prev_time = comments[sortedcomments[max(0, counter-1)]].pub_date
+                    next_time = comments[sortedcomments[min(totalcomments-1, counter+1)]].pub_date
+                    if prev_time is None and next_time is None:
+                        # No luck with finding time from neighbouring
+                        # comments. Let's look for the post instead.
+                        c_id = sortedcomments[counter]
+                        postid = c_info['c_id']['postid']
+                        if postid in posts:
+                            new_time = posts[postid].pub_date
+                        # else: orphaned comment, anyway. don't bother.
+                    elif next_time is None:
+                        new_time = prev_time
+                    elif prev_time is None:
+                        new_time = next_time
+                    else:
+                        # Midway between previous and next
+                        new_time = prev_time + (next_time - prev_time)/2
+                    # Save new timestamp
+                    comment.pub_date = new_time
             # Re-thread comments
-            yield _(u'Rethreading comments...')
+            yield _(u'<p>Rethreading comments...</p>')
             for comment in comments.values():
                 comment.parent = comments.get(comment.parent, None)
         else:
