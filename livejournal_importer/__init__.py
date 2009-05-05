@@ -10,7 +10,7 @@ from lxml import etree
 from pytz import UTC
 from zine.api import *
 from zine.importers import Importer, Blog, Tag, Category, Author, Post, Comment
-from zine.i18n import to_blog_timezone, get_timezone
+from zine.i18n import get_timezone
 from zine.utils import forms, log
 from zine.utils.validators import ValidationError, check
 from zine.utils.admin import flash
@@ -500,7 +500,7 @@ class LiveJournalImporter(Importer):
                     subjecttag = comment.find('subject')
                     body = bodytag is not None and bodytag.text or u''
                     if subjecttag is not None:
-                        body = u'<span class="livejournal_subject">%s</span>\n%s'%(
+                        body = u'<span class="subject">%s</span>\n%s'%(
                             subjecttag.text, body)
                     datetag = comment.find('date')
                     if datetag is None: # Deleted comments have no date

@@ -1,0 +1,10 @@
+Name: reStructuredText Parser
+Plugin URL: http://bitbucket.org/jace/zine-plugins/
+Author: Kiran Jonnalagadda <jace@pobox.com>
+Author URL: http://jace.seacrow.com/
+License: BSD
+Version: 0.4
+Contributors: Tim Hatch <tim@timhatch.com>, Christophe Combelles, Daniel Nouri
+Description: reStructuredText Parser for Zine, with Pygments support. This \
+ version extends the earlier plugins by Tim Hatch, Christophe Combelles \
+ and Daniel Nouri.

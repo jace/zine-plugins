@@ -1,0 +1,16 @@
+{% extends "admin/layout.html" %}
+{% block title %}{{ _("reStructuredText Parser Options") }}{% endblock %}
+{% block contents %}
+  <h1>{{ _("reStructuredText Parser Options") }}</h1>
+  <p>{% trans rstweb='http://docutils.sourceforge.net/rst.html' %}
+    reStructuredText is an easy-to-read, what-you-see-is-what-you-get plaintext
+    markup syntax and parser system. The Docutils website has documentation on
+    <a href="{{ rstweb }}">how to use reStructuredText</a>.
+  {% endtrans %}</p>
+  {% call form() %}
+    {{ form.as_dl() }}
+    <div class="actions">
+      <input type="submit" value="{{ _('Save') }}">
+    </div>
+  {% endcall %}
+{% endblock %}

@@ -6,5 +6,6 @@ License: BSD
 Version: 0.2
 Description: This plugin parses LiveJournal markup. It converts newlines into\
  line break tags; converts &lt;lj user="foo"&gt; tags to links to their\
- LiveJournal pages; avoids converting markup within <lj-raw> sections; and \
- converts up to the first <lj-cut> tag into a Zine <intro> section.
+ LiveJournal pages; avoids converting markup within &lt;lj-raw&gt; sections; \
+ and converts up to the first &lt;lj-cut&gt; tag into a Zine &lt;intro&gt; \
+ section.

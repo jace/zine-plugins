@@ -1,0 +1,32 @@
+{% extends "admin/layout.html" %}
+{% block title %}{{ _("Import from Quills on Plone") }}{% endblock %}
+{% block contents %}
+  <h1>{{ _("Import from Quills on Plone") }}</h1>
+  <p>{% trans %}
+    This importer allows you to import weblog entries and comments from your
+    Quills blog into your new Zine blog.
+  {% endtrans %}</p>
+  <p>{%trans %}
+    Quills is not yet a 1.0 product. This importer was written against a
+    development version running on Plone 2.5. It is quite likely to not work
+    for you and to break down with no indication of what went wrong. Let me
+    know if it works. I’m happy to accept patches if it doesn’t.
+  {% endtrans %}</p>
+  {% call form() %}
+    {{ form.as_dl() }}
+
+    <p>{%trans %}
+      This importer requires a helper script to be installed within Plone. You
+      will require ZMI access for this. Go to the your site’s
+      <code>/portal_skins/custom/manage_main</code> page, add a new item of type
+      <code>Script (Python)</code>, name it <code>zine_export</code>, and edit
+      and paste the following code into it.
+    {% endtrans %}</p>
+
+    {{ exportscript }}
+
+    <div class="actions">
+      <input type="submit" value="{{ _('Import') }}">
+    </div>
+  {% endcall %}
+{% endblock %}

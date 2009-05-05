@@ -1,0 +1,7 @@
+Name: Quills Importer
+Plugin URL: http://bitbucket.org/jace/zine-plugins/
+Author: Kiran Jonnalagadda <jace@pobox.com>
+Author URL: http://jace.seacrow.com/
+License: BSD
+Version: 0.1
+Description: This plugin imports weblog entries and comments from Quills blogs hosted on Plone.
