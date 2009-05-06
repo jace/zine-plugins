@@ -4,11 +4,13 @@ import xmlrpclib
 from time import strptime
 from datetime import datetime
 from pytz import UTC
+from urllib2 import urlparse
 from werkzeug import escape
 from zine.api import *
 from zine.importers import Importer, Blog, Tag, Category, Author, Post, Comment
 from zine.i18n import get_timezone
 from zine.utils import forms, log
+from zine.utils.validators import check, ValidationError
 from zine.utils.admin import flash
 from zine.utils.http import redirect_to
 from zine.utils.text import gen_slug, gen_timestamped_slug
@@ -49,7 +51,7 @@ result = []
 for item in catalog(Type=['Weblog Entry']):
     entry = item.getObject()
     replies = []
-    try:
+    if dtool.isDiscussionAllowedFor(entry):
         objreplies = dtool.getDiscussionFor(entry)
         for rid in objreplies.objectIds():
             reply = objreplies.getReply(rid)
@@ -66,8 +68,6 @@ for item in catalog(Type=['Weblog Entry']):
                 body=reply.text,
                 parent=parent
                 ))
-    except:
-        pass
     result.append(dict(
         id=entry.id,
         type=entry.Type(),
@@ -97,8 +97,11 @@ def reunicode(value):
 
 
 def parse_plone_date(value):
-    return get_timezone().localize(
-        datetime(*(strptime(value, '%Y-%m-%d %H:%M:%S')[:6])))
+    if value == 'None' or not value:
+        return UTC.localize(datetime.utcnow()).astimezone(get_timezone())
+    else:
+        return get_timezone().localize(
+            datetime(*(strptime(value, '%Y-%m-%d %H:%M:%S')[:6])))
 
 
 def is_valid_plone_password(message=None):
@@ -123,10 +126,43 @@ def is_valid_plone_password(message=None):
     return validator
 
 
+def is_valid_blog_url(message=None):
+    """
+    Validates blog URL. Must begin with http or https and not have a fragment.
+    Ignores the message parameter.
+    
+    >>> check(is_valid_blog_url, 'http://jace.seacrow.com')
+    True
+    >>> check(is_valid_blog_url, 'http://try:me@jace.seacrow.com/')
+    False
+    >>> check(is_valid_blog_url, 'http://jace.seacrow.com?start=10')
+    False
+    >>> check(is_valid_blog_url, 'ftp://jace.seacrow.com/')
+    False
+    >>> check(is_valid_blog_url, 'http://jace.seacrow.com/#there')
+    False
+    """
+    def validator(form, value):
+        parts = urlparse.urlsplit(value)
+        if parts.scheme not in ['http', 'https']:
+            raise ValidationError(lazy_gettext(u'URLs must be of type '\
+                                               u'http or https.'))
+        elif parts.fragment:
+            raise ValidationError(lazy_gettext(u'URLs may not have a '\
+                                               u'#reference part.'))
+        elif parts.netloc.find('@') != -1:
+            raise ValidationError(lazy_gettext(u'URLs should not be specified '\
+                                               u'with username and password.'))
+        elif parts.query:
+            raise ValidationError(lazy_gettext(u'URLs may not have a ?query.'))
+    return validator
+
+
 class QuillsImportForm(forms.Form):
     """This form asks the user for the Quills blog URL and authorisation."""
-    blogurl = forms.TextField(lazy_gettext(u'Quills Blog URL'),
-                                 required=True)
+    blogurl =  forms.TextField(lazy_gettext(u'Quills Blog URL'),
+                               validators=[is_valid_blog_url()],
+                               required=True)
     username = forms.TextField(lazy_gettext(u'Plone login'),
                                help_text=lazy_gettext(u'Login and password '\
                                u'required only if you’d like to download '\
@@ -146,7 +182,22 @@ class QuillsImporter(Importer):
     def import_quills(self, blogurl, username, password):
         """Import from Quills using Zope's XML-RPC interface."""
         yield _(u'<p>Beginning Quills import. Attempting to get data...</p>')
-        conn = xmlrpclib.ServerProxy(blogurl) # FIXME! Add auth
+        urlparts = urlparse.urlsplit(blogurl)
+        urlnetloc = urlparts.netloc
+        urlpath = urlparts.path
+        if not urlpath.endswith('/'):
+            urlpath += '/' # Trailing slash required for XML-RPC
+        if username:
+            #: We're using simple HTTP auth, which isn't the smartest thing to
+            #: do, but Plone's default cookie-auth system is just a base64
+            #: encoding of username:password, which isn't any better. Quills
+            #: runs on Plone 2.1 and 2.5, neither of which shipped with a more
+            #: secure auth mechanism, so we'll just go with what works. HTTP
+            #: auth fallback has been supported by every Zope 2.x release.
+            urlnetloc = '%s:%s@%s' % (username, password, urlnetloc)
+        useblogurl = urlparse.urlunsplit((urlparts.scheme, urlnetloc, urlpath,
+                                          '', ''))
+        conn = xmlrpclib.ServerProxy(useblogurl)
         title = conn.Title()
         data = conn.zine_export()
         yield _(u'<p>Got data. Parsing for weblog entries and replies.</p>')
@@ -177,14 +228,14 @@ class QuillsImporter(Importer):
             parser = PLONE_PARSERS.get(entry['format'], 'zeml')
             pub_date = parse_plone_date(entry['date'])
 
-            ##if description:
-            ##    #: Assume description is text/plain. Anything else is unlikely
-            ##    if parser in ['zeml', 'html']:
-            ##        body = u'<intro><p>%s</p></intro>%s' % (description, body)
-            ##    else:
-            ##        # We don't know how this parser works, so just insert
-            ##        # description before body, with a blank line in between
-            ##        body = u'%s\n\n%s' % (description, body)
+            if description:
+                #: Assume description is text/plain. Anything else is unlikely
+                if parser in ['zeml', 'html']:
+                    body = u'<intro><p>%s</p></intro>%s' % (description, body)
+                else:
+                    # We don't know how this parser works, so just insert
+                    # description before body, with a blank line in between
+                    body = u'%s\n\n%s' % (description, body)
 
             comments = {}
 
@@ -204,7 +255,8 @@ class QuillsImporter(Importer):
                 comments[comment['id']] = Comment(
                     author = c_author,
                     body = c_body,
-                    pub_date = parse_plone_date(comment['date']),
+                    pub_date = parse_plone_date(
+                                            comment['date']).astimezone(UTC),
                     author_email = None,
                     author_url = None,
                     remote_addr = None,
@@ -223,9 +275,9 @@ class QuillsImporter(Importer):
                                           'entry', pub_date),
                 title=subject,
                 link=entry['url'],
-                pub_date=pub_date,
+                pub_date=pub_date.astimezone(UTC),
                 author=authors[entry['author']],
-                intro=description,
+                intro=u'',
                 body=body,
                 tags=itemtags,
                 categories=[],
@@ -234,7 +286,8 @@ class QuillsImporter(Importer):
                 pings_enabled=True,
                 uid=entry['id'],
                 parser=parser,
-                content_type='entry'
+                content_type='entry',
+                status=status
                 )
             yield _(u'<li><strong>%s</strong> (by %s; %d comments)</li>') % (
                 subject, author.username, len(comments))

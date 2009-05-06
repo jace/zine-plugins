@@ -1,9 +1,9 @@
 {% extends "admin/layout.html" %}
-{% block title %}{{ _("Importing from LiveJournal") }}{% endblock %}
+{% block title %}{{ _("Importing from Quills") }}{% endblock %}
 {% block contents %}
-  <h1>{{ _("Importing from LiveJournal") }}</h1>
+  <h1>{{ _("Importing from Quills") }}</h1>
   <p>{% trans %}
-    The importer is connecting to LiveJournal to retrieve your data.
+    The importer is connecting to Quills to retrieve your data.
     This will take some time. <strong>Don’t close this window!</strong>
   {% endtrans %}</p>
   {% for event in live_log %}{{ event }}{% endfor %}
