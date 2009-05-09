@@ -18,7 +18,7 @@ from zine.utils.http import redirect_to
 from zine.utils.net import urlparse, HTTPHandler
 from zine.utils.text import gen_slug, gen_timestamped_slug
 from zine.models import COMMENT_MODERATED, COMMENT_BLOCKED_USER, \
-     COMMENT_DELETED, STATUS_PUBLISHED
+     COMMENT_DELETED, STATUS_PUBLISHED, STATUS_PROTECTED, STATUS_PRIVATE
 import zine.models
 
 __version__ = '0.2'
@@ -34,7 +34,9 @@ IMPORT_COMMUNITY=2
 IMPORT_COMMUNITY_ALL=3
 
 SECURITY_DISCARD=1
-SECURITY_PUBLIC=2
+SECURITY_PRIVATE=2
+SECURITY_PROTECTED=3
+SECURITY_PUBLIC=4
 
 ljuser_re = re.compile(r'''<lj\s+(user|comm)\s*=\s*"?'?(\w+)"?'?\s*>''', re.U | re.I)
 tag_re = re.compile(r'</?(\w+).*?/?>', re.IGNORECASE | re.UNICODE)
@@ -164,16 +166,15 @@ class LiveJournalImportForm(forms.Form):
         widget=forms.RadioButtonGroup)
     community = forms.TextField(lazy_gettext(u'Community name'))
     security_choices = [(SECURITY_DISCARD, lazy_gettext(u'Discard')),
+                        (SECURITY_PRIVATE, lazy_gettext(u'Make Private')),
+                        (SECURITY_PROTECTED, lazy_gettext(u'Make Protected')),
                         (SECURITY_PUBLIC, lazy_gettext(u'Make Public'))]
-    security_friends = forms.ChoiceField(lazy_gettext(
-        u'Convert friends-only entries to'), choices=security_choices,
-        help_text=lazy_gettext(u'Zine only supports public entries, so you '\
-                               u'must choose what to do with your protected '\
-                               u'entries.'))
     security_custom = forms.ChoiceField(lazy_gettext(
-            u'Convert custom-security entries to'), choices=security_choices)
-    security_private = forms.ChoiceField(lazy_gettext(
-            u'Convert private entries to'), choices=security_choices)
+            u'Convert custom-security entries to'), choices=security_choices,
+            help_text=lazy_gettext(u'Zine only supports public, private and '\
+                                   u'protected entries, so you must choose '\
+                                   u'what to do with your custom security '\
+                                   u'entries.'))
     categories = forms.Multiple(forms.ModelField(zine.models.Category, 'id'),
                                 lazy_gettext(u'Categories'),
                                 help_text=lazy_gettext(u'Choose categories to '\
@@ -213,10 +214,8 @@ class LiveJournalImporter(Importer):
     title = 'LiveJournal'
 
     def import_livejournal(self, username, password, import_what=IMPORT_JOURNAL,
-                           community='', security_friends=SECURITY_DISCARD,
-                           security_custom=SECURITY_DISCARD,
-                           security_private=SECURITY_DISCARD, categories=[],
-                           getcomments=True):
+                           community='', security_custom=SECURITY_PROTECTED,
+                           categories=[], getcomments=True):
         """Import from LiveJournal using specified parameters."""
         yield _(u'<p>Beginning LiveJournal import. Attempting to login...</p>')
         if import_what != IMPORT_JOURNAL:
@@ -326,25 +325,28 @@ class LiveJournalImporter(Importer):
                     continue
                 if poster not in authors:
                     authors[poster] = Author(poster, '', '')
+                # Map LiveJournal security codes to Zine status flags
                 security = item.get('security', 'public')
                 if security == 'usemask' and item['allowmask'] == 1:
                     security = 'friends'
-                if security == 'private' and security_private == \
-                                                        SECURITY_DISCARD:
-                    yield _(u'<li><strong>Discarded (private):</strong> '\
-                            u'%s</li>') % subject
-                    continue
-                if security == 'friends' and security_friends == \
-                                                        SECURITY_DISCARD:
-                    yield _(u'<li><strong>Discarded (friends):</strong> '\
-                            u'%s</li>') % subject
-                    continue
-                if security == 'usemask' and security_custom == \
-                                                        SECURITY_DISCARD:
-                    yield _(u'<li><strong>Discarded (masked):</strong> '\
-                            u'%s</li>') % subject
-                    continue
-                # Import as public post
+                if security == 'usemask':
+                    status = {
+                        SECURITY_DISCARD: None,
+                        SECURITY_PUBLIC: STATUS_PUBLISHED,
+                        SECURITY_PROTECTED: STATUS_PROTECTED,
+                        SECURITY_PRIVATE: STATUS_PRIVATE
+                    }[security_custom]
+                    if status is None:
+                        yield _(u'<li><strong>Discarded (masked):</strong> '\
+                                u'%s</li>') % subject
+                        continue
+                else:
+                    status = {
+                        'public': STATUS_PUBLISHED,
+                        'friends': STATUS_PROTECTED,
+                        'private': STATUS_PRIVATE,
+                        }[security]
+                    
                 #: Read time as local timezone and then convert to UTC. Zine
                 #: doesn't seem to like non-UTC timestamps in imports.
                 pub_date = get_timezone().localize(parse_lj_date(
@@ -403,6 +405,7 @@ class LiveJournalImporter(Importer):
                     uid=item['itemid'],
                     parser=item['props'].get('opt_preformatted', False) and
                                                         'html' or 'livejournal',
+                    status=status,
                     extra=extras
                     )
                 yield _(u'<li>%s <em>(by %s on %s)</em></li>') % (subject, poster, pub_date)
@@ -598,9 +601,7 @@ class LiveJournalImporter(Importer):
                       password = form.data['password'],
                       import_what = form.data['import_what'],
                       community = form.data['community'],
-                      security_friends = form.data['security_friends'],
                       security_custom = form.data['security_custom'],
-                      security_private = form.data['security_private'],
                       categories = form.data['categories'],
                       getcomments = form.data['getcomments']),
                 _stream=True)
