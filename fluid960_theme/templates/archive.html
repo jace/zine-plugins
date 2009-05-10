@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% block title %}{{ _("Archive") }}{% endblock %}
+{% from "_entry.html" import render_entry %}
+{% block contents %}
+  {%- if month_list %}
+    <h2 id="page-heading">{% trans %}Archive{% endtrans %}</h2>
+    <ul>
+    {%- for item in months %}
+      <li><a href="{{ url_for('blog/archive', year=item.year,
+        month=item.month)|e }}">{{ item|monthformat }}</a></li>
+    {%- else %}
+      <li><em>{{ _("empty archive") }}</em></li>
+    {%- endfor %}
+    </ul>
+  {%- else -%}
+    {%- if not month %}
+      <h2 id="page-heading">{% trans year %}Archive for {{ year }}{% endtrans %}</h2>
+    {%- elif not day %}
+      <h2 id="page-heading">{% trans month=date|monthformat %}Archive for {{ month }}{% endtrans %}</h2>
+    {%- else %}
+      <h2 id="page-heading">{% trans day=date|dateformat('full') %}Archive for {{ day }}{% endtrans %}</h2>
+    {%- endif %}
+    {%- set first=True %}
+    {%- for post in posts %}
+      {{ render_entry(post, first) }}
+      {%- set first=False %}
+    {%- endfor %}
+    {%- if pagination.necessary %}
+    <div class="pagination">
+      {{ pagination.generate() }}
+    </div>
+    {%- endif %}
+  {%- endif %}
+{% endblock %}

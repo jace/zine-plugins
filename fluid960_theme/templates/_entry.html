@@ -1,0 +1,51 @@
+{% macro render_entry_related(entry, comment_count=true) %}
+  {% set pipe = joiner('|') %}
+  {%- if entry.categories %} {{ pipe() }}
+    <span class="discreet">{{ _('Categories') }}:</span>
+    {% for category in entry.categories -%}
+      <a href="{{ url_for(category)|e }}">{{ category.name|e }}</a>
+      {%- if not loop.last %}, {% endif %}
+    {%- endfor %}
+  {%- endif %}
+  {%- if entry.tags %} {{ pipe() }}
+    <span class="discreet">{{ _('Tags') }}:</span>
+    {% for tag in entry.tags -%}
+      <a href="{{ url_for(tag)|e }}" rel="tag">{{ tag.name|e }}</a>
+      {%- if not loop.last %}, {% endif %}
+    {%- endfor %}
+  {% endif %}
+  <ol class="post-footer">
+    <li><a href="{{ url_for(entry)|e }}">{{ entry.pub_date|timeformat|e }}</a></li>
+    {%- if comment_count %}
+      <li><a href="{{ url_for(entry)|e }}#comments">{% trans comments=entry.comment_count
+        %}{{ comments }} comment{% pluralize %}{{ comments}} comments{% endtrans -%}</a></li>
+    {% endif %}
+    {%- if request.user.is_manager %}
+      <li><a href="{{ url_for('admin/edit_post', post_id=entry.id) }}">{{ _('Edit') }}</a></li>
+    {%- endif %}
+  </ol>
+{% endmacro %}
+
+{% macro render_entry(entry, first=False) -%}
+  {{ emit_event('before-entry-rendered', entry) }}
+  <div class="{% if first %}first {% endif %}article entry">
+    <p class="entrydate">{{ entry.pub_date|dateformat('full')|e }}
+      {%- if entry.is_scheduled %}<br>[ {% trans
+        time_span=entry.pub_date|timedeltaformat
+        %}<strong>Scheduled Post:</strong> This entry will appear in {{
+          time_span }}.{% endtrans %}
+      ]{% endif -%}
+    </p>
+    <h2><a href="{{ url_for(entry)|e }}">{{ entry.title|e }}</a></h2>
+    <div class="text">
+      {{ entry.intro or entry.body }}
+      {% if entry.intro -%}
+        <p><a href="{{ url_for(entry)|e }}#extended">{{ _("Read on") }}...</a></p>
+      {%- endif %}
+    </div>
+    <p class="related">
+      {{ render_entry_related(entry) }}
+    </p>
+  </div>
+  {{ emit_event('after-entry-rendered', entry) }}
+{%- endmacro %}

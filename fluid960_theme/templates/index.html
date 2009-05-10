@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block title %}{{ _("Index") }}{% endblock %}
+{% from "_entry.html" import render_entry %}
+{% block contents %}
+  {%- for post in posts %}
+    {{ render_entry(post) }}
+  {%- else %}
+    <div id="box">
+      <h2>{% trans %}Welcome{% endtrans %}</h2>
+      <div class="notification">
+        <p>{% trans %}So far there are no entries in this blog.{% endtrans %}</p>
+      </div>
+    </div>
+  {%- endfor %}
+  {%- if pagination.necessary %}
+  <div class="pagination">
+    {{ pagination.generate() }}
+  </div>
+  {%- endif %}
+{% endblock %}

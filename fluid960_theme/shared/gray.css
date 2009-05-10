@@ -1,0 +1,10 @@
+/* Gray colour scheme for theme. */
+
+div.pagination a, div.pagination strong {
+    border: 1px solid #bbb;
+}
+
+div.pagination a:hover {
+    background-color: #eee;
+    color: #333;
+}

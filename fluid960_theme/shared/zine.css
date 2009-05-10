@@ -1,0 +1,204 @@
+/* Zine-specific style changes to Fluid 960 */
+
+body {
+    font: 13px/1.5 "Helvetica Neue", "Lucida Grande", "DejaVu Sans", "Bitstream Vera Sans", "Lucida Sans", Verdana, sans-serif;
+    border-top: 0;
+}
+
+h1, h2, h3, h4, h5, h6, p#tagline, p.entrydate {
+    font-family: Georgia, sans;
+}
+
+.widget h2 {
+    font-family: "Helvetica Neue", "Lucida Grande", "DejaVu Sans", "Bitstream Vera Sans", "Lucida Sans", Verdana, sans-serif;
+}
+
+.article h2 {
+    font-size: 1.7em;
+    border-bottom: solid 1px gray;
+    margin-bottom: 0.25em;
+    padding-bottom: 1px;
+}
+
+.discreet {
+    color: #76797c;
+}
+
+.related {
+    font-size: 85%;
+    margin-top: 1.5em;
+    margin-bottom: 0;
+}
+
+a {
+    font-weight: inherit;
+    color: inherit;
+    text-decoration: underline;
+}
+
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a, .tag-cloud a {
+    text-decoration: none;
+}
+
+.tag-cloud a:hover {
+    text-decoration: underline;
+}
+
+.entry {
+    border-top: none;
+    padding-left: 2em;
+}
+
+p.entrydate {
+    margin-bottom: 0;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+blockquote {
+    font-size: 100%;
+    font-family: inherit;
+}
+
+h1#branding {
+	font-weight: normal;
+	font-size: 2.5em;
+	text-align: left;
+	background: #aaa;
+	padding: .7em 1em 0 0.75em;
+	margin-bottom: 0;
+}
+
+p#tagline {
+    line-height: 1.2em;
+	font-weight: normal;
+	font-size: 1.2em;
+	text-align: left;
+	background: #aaa;
+	padding: 0 3.5em 1.5em 3.5em;
+	margin-top: 0;
+	margin-bottom: 1em;
+}
+
+.menuwidget ul.menu ul li a {
+    padding-left: 12px;
+    text-decoration: none;
+}
+
+pre {
+    border: 1px solid #dddddd;
+    background: #f6f6f6;
+    padding: 0.5em;
+}
+
+/* Comments */
+
+#comments, #comments ul {
+    list-style-image: none;
+    list-style-type: none;
+    margin-bottom: 0;
+}
+
+#comments ul {
+    margin-left: 30px;
+}
+
+#comments li {
+    margin: 0;
+    padding: 0;
+}
+
+#comments li div.comment {
+    border: 1px solid #dddddd;
+    background: #f6f6f6;
+    padding: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+#comments li div.comment .subject {
+    font-weight: bold;
+}
+
+#comments li div.blocked {
+    opacity: 0.5;
+}
+
+#comments li div.blocked:hover {
+    opacity: 0.8;
+}
+
+#comments li div.deleted {
+    text-decoration: line-through;
+}
+
+#comments p.meta {
+    border-bottom: 1px solid #dddddd;
+}
+
+#comments p.meta a {
+    text-decoration: none;
+    font-weight: bold;
+}
+
+#comments p.meta a:hover {
+    text-decoration: underline;
+}
+
+#comments p.meta .anonymous {
+    font-style: italic;
+}
+
+#comments li div.comment img.avatar {
+    float: left;
+    padding-right: 0.5em;
+}
+
+/* Pagination */
+div.pagination {
+    margin: 1em 0;
+    text-align: center;
+}
+
+div.pagination span.commata {
+    display: none;
+}
+
+div.pagination a, div.pagination strong {
+    padding: 2px 5px;
+    margin: 0 2px;
+    text-decoration: none;
+}
+
+/* This is for the permalink and other metadata attached to a post */
+.post-footer {
+    clear: both;
+    white-space: nowrap;
+    list-style-image: none;
+    list-style-type: none;
+    text-align: right;
+    font-size: 85%;
+    font-weight: normal;
+}
+
+.post-footer:before {
+    content: "("
+}
+
+.post-footer:after {
+    content: ")"
+}
+
+.post-footer li {
+    display: inline;
+    margin: 0;
+}
+
+.post-footer > li {
+    border-left: 1px solid black;
+    padding-left: 0.4em;
+}
+
+.post-footer > li:first-child {
+    border-left: 0;
+    padding-left: 0;
+}

@@ -1,0 +1,10 @@
+<div class="box menu widget menuwidget">
+  {{ emit_event('before-widget-rendered', widget) }}
+  {% if widget.show_title %}<h2 id="toggle-{{ widget.name }}">{% block title %}{% endblock %}</h2>{% endif %}
+  <div class="block" id="{{ widget.name }}">
+    <ul class="section menu"><li>
+    {% block body %}{% endblock %}
+    </li></ul>
+  </div>
+  {{ emit_event('after-widget-rendered', widget) }}
+</div>

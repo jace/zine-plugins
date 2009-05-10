@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+  "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="{{ cfg.language|e }}">
+<head>
+  <title>{% block title %}{% endblock %} &mdash; {{ cfg.blog_title|e }}</title>
+  <link rel="stylesheet" type="text/css" href="{{ shared_url('fluid960_theme::960/reset.css') }}" media="screen">
+  <link rel="stylesheet" type="text/css" href="{{ shared_url('fluid960_theme::960/text.css') }}" media="screen">
+  <link rel="stylesheet" type="text/css" href="{{ shared_url('fluid960_theme::960/grid.css') }}" media="screen">
+  <link rel="stylesheet" type="text/css" href="{{ shared_url('fluid960_theme::960/layout.css') }}" media="screen">
+  <link rel="stylesheet" type="text/css" href="{{ shared_url('fluid960_theme::960/nav.css') }}" media="screen">
+  <link rel="stylesheet" type="text/css" href="{{ shared_url('fluid960_theme::zine.css') }}" media="screen">
+  <link rel="stylesheet" type="text/css" href="{{ shared_url(cfg['fluid960_theme/variation']) }}">
+	<!--[if IE 6]><link rel="stylesheet" type="text/css" href="{{ shared_url('fluid960_theme::960/ie6.css') }}" media="screen"><![endif]-->
+	<!--[if gte IE 7]><link rel="stylesheet" type="text/css" href="{{ shared_url('fluid960_theme::960/ie.css') }}" media="screen"><![endif]-->
+  {{ get_page_metadata() }}
+</head>
+<body>
+  <div class="container_16">
+    <div class="grid_16" id="header">
+      <h1 id="branding"><a href="{{ url_for('blog/index')|e }}">{{ cfg.blog_title|e }}</a></h1>
+      <p id="tagline">{{ cfg.blog_tagline }}</p>
+    </div>
+    <div class="clear"></div>
+
+    <div class="grid_11" id="content">
+      {{ emit_event('before-contents-rendered') }}
+      {% block contents %}{% endblock %}
+      {{ emit_event('after-contents-rendered') }}
+    </div>
+    <div class="grid_5" id="sidebar">
+      {{ render_widgets() }}
+    </div>
+    <div class="clear"></div>
+
+    <div class="grid_16" id="site_info">
+      <div class="box">
+        <p>{% trans zine='<a href="http://zine.pocoo.org/">Zine</a>'
+          %}Proudly powered by {{ zine }}.{% endtrans %}</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,29 @@
+/* Blue colour scheme for theme */
+
+a {
+    color: #005599;
+}
+
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a, .tag-cloud a, .widget a {
+    color: inherit;
+}
+
+p.entrydate, .article h2 {
+    color: #333399;
+}
+
+.article h2 {
+    border-bottom: 1px solid #8cacbb;
+}
+
+.post-footer > li {
+    border-left: 1px solid #8cacbb;
+}
+
+div.pagination a, div.pagination strong {
+    border: 1px solid #B4D2E7;
+}
+
+div.pagination a:hover {
+    background-color: #EBF2FA;
+}
