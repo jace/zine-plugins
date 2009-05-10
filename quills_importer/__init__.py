@@ -250,7 +250,7 @@ class QuillsImporter(Importer):
                 c_body = reunicode(comment['body'])
                 c_subject = reunicode(comment['title'])
                 if c_subject:
-                    c_body = '%s\n%s' % (c_subject, c_body)
+                    c_body = '%s\n\n%s' % (c_subject, c_body)
 
                 comments[comment['id']] = Comment(
                     author = c_author,
