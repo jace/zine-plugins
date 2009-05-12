@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block title %}{{ user.display_name|e }}{% endblock %}
 {% block contents %}
-  <h2>{{ user.display_name|e }}</h2>
+  <h2 class="specialpage">{{ user.display_name|e }}</h2>
   {%- if user.real_name and user.real_name != user.display_name %}
     <p>{{ user.real_name }}</p>
   {%- endif %}

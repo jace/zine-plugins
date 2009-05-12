@@ -2,25 +2,40 @@
     <div class="comment{% if comment.is_pingback %} pingback{% endif %}{%
       if comment.blocked %} blocked{% endif %}{%
       if comment.is_deleted %} deleted{% endif %} id="comment-{{ comment.id }}">
-      <img class="avatar" src="{{ comment|avatar|e }}">
-      <p class="meta">{% if comment.is_pingback %}{{ _("Pingback by") }}
-        {% endif %}{% if comment.www
-        %}<a href="{{ comment.www|e }}">{{ comment.author|e }}</a>{%
-        elif not comment.author %}<span class="anonymous">{%
-        trans %}Anonymous{% endtrans %}</span>{%
-        else %}{{ comment.author|e }}{% endif %} &mdash; {{
-        comment.pub_date|datetimeformat }} &mdash; {%
-        if request.user.is_manager -%}
-        <a href="{{ url_for('admin/edit_comment', comment_id=comment.id)
-          }}" title="{{ _('edit this comment') }}">&#9998;</a> -
-      {%- endif %} <a href="#comment-{{ comment.id
-      }}" title="{{ _('link to this comment') }}">#</a>
-      {%- if add_reply_link %}
-        - <a href="javascript:Zine.replyToComment({{ comment.id
-          }})" title="{{ _('reply to this comment') }}">&#8617;</a>
-      {% endif -%}
-      </p>
-      <div class="text">{{ comment.body }}</div><div class="clear"></div>
+      <div class="avatar"><img src="{{ comment|avatar|e }}"></div>
+      <div>
+        <p class="meta">{% if comment.is_pingback %}{{ _("Pingback by") }}
+          {% endif %}{% if comment.www
+          %}<a href="{{ comment.www|e }}" class="author">{{ comment.author|e }}</a>{%
+          elif not comment.author %}<span class="author anonymous">{%
+          trans %}Anonymous{% endtrans %}</span>{%
+          else %}<span class="author">{{ comment.author|e }}</span>{% endif %} &mdash; {{
+          comment.pub_date|datetimeformat }} &mdash;
+          <a href="#comment-{{ comment.id
+          }}" title="{{ _('link to this comment') }}">#</a>
+          {%- if add_reply_link %}
+            <a href="javascript:Zine.replyToComment({{ comment.id
+              }})" title="{{ _('reply to this comment') }}">&#8617;</a>
+          {% endif -%}
+          {% if request.user.is_manager -%}<span class="commentadmin"> &mdash;
+            <a href="{{ url_for('admin/edit_comment', comment_id=comment.id)
+              }}" title="{{ _('edit this comment') }}">&#9998;</a>
+            {% if not comment.blocked -%}
+              <a href="{{ url_for('admin/block_comment', comment_id=comment.id)
+                }}" title="{{ _('block this comment') }}">&#9785;</a>
+            {%- endif %} {% if comment.is_unmoderated -%}
+              <a href="{{ url_for('admin/approve_comment', comment_id=comment.id)
+                }}" title="{{ _('approve this comment') }}">&#9786;</a>
+            {%- endif %} {% if not comment.is_spam -%}
+              <a href="{{ url_for('admin/report_comment_spam', comment_id=comment.id)
+                }}" title="{{ _('report as spam') }}">&#9873;</a>
+            {%- endif %} {% if not comment.is_deleted -%}
+              <a href="{{ url_for('admin/delete_comment', comment_id=comment.id)
+                }}" title="{{ _('delete this comment') }}">&#9746;</a>
+            {%- endif %}</span>{% endif -%} 
+        </p>
+        <div class="text">{{ comment.body }}</div><div class="clear"></div>
+      </div>
     </div>
 {%- endmacro %}
 

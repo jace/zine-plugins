@@ -1,8 +1,10 @@
-<div class="box widget">
+<div class="widget" id="{{ widget.name }}">
   {{ emit_event('before-widget-rendered', widget) }}
-  {% if widget.show_title %}<h2 id="toggle-{{ widget.name }}">{% block title %}{% endblock %}</h2>{% endif %}
-  <div class="block" id="{{ widget.name }}">
+  <dl>
+    <dt>{% if widget.show_title %}<h3>{% block title %}{% endblock %}</h3>{% endif %}</dt>
+    <dd>
     {% block body %}{% endblock %}
-  </div>
+    </dd>
+  </dl>
   {{ emit_event('after-widget-rendered', widget) }}
 </div>

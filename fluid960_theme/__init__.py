@@ -12,7 +12,8 @@ import os.path
 from urllib import urlencode
 try: from hashlib import md5
 except ImportError: from md5 import new as md5
-from zine.api import _
+from werkzeug import escape
+from zine.api import url_for, _
 import zine.i18n
 from zine.application import Theme
 from zine.utils import forms
@@ -22,12 +23,6 @@ SHARED_FILES = os.path.join(os.path.dirname(__file__), 'shared')
 THEME_SETTINGS = {
     'date.time_format.default': 'h:mm a'
     }
-
-gray_variation = u'fluid960_theme::gray.css'
-variations = {
-    gray_variation:               _('Gray'),
-    u'fluid960_theme::blue.css':  _('Blue'),
-}
 
 class Fluid960Theme(Theme):
     """
@@ -39,16 +34,28 @@ class Fluid960Theme(Theme):
 
     def avatar(self, comment):
         if comment.user is None:
-            if comment._email:
-                #: Return Gravatar URL
-                return u"http://www.gravatar.com/avatar.php?" + urlencode(
-                    {'gravatar_id':md5(comment._email).hexdigest(),
-                     'size': 100})
-            elif comment._www and comment._www.find('livejournal.com') != -1:
-                #: Return LiveJournal userpic
-                return u"http://ljpic.seacrow.com/geturl?" + urlencode(
-                    {'url': comment._www})
-        return u'' # FIXME: Return URL to shared resource with blank image
+            email = comment._email
+            www = comment._www
+        else:
+            email = comment.user.email
+            www = comment.user.www
+        if email:
+            #: Return Gravatar URL
+            return u"http://www.gravatar.com/avatar.php?" + urlencode(
+                {'gravatar_id':md5(email).hexdigest(),
+                 'size': 80, 'default': 'identicon'})
+        elif www and www.find('livejournal.com') != -1:
+            #: Return LiveJournal userpic
+            return u"http://ljpic.seacrow.com/geturl?" + urlencode(
+                {'url': www})
+        return url_for('fluid960_theme/shared', filename='img/user.gif')
+
+    def amp(self, text):
+        """
+        Place & in a <span class="amp" /> tag and return escaped text.
+        """
+        return escape(text).replace('&amp;', '<span class="amp">&amp;</span>')
+    
 
 def setup(app, plugin):
     theme = Fluid960Theme('fluid960', TEMPLATE_FILES, plugin.metadata,
@@ -56,6 +63,7 @@ def setup(app, plugin):
     app.add_theme(theme)
     app.add_template_filter('timeformat', theme.format_time)
     app.add_template_filter('avatar', theme.avatar)
+    app.add_template_filter('amp', theme.amp)
     app.add_shared_exports('fluid960_theme', SHARED_FILES)
     app.add_config_var('fluid960_theme/variation',
                        forms.TextField(default=gray_variation))

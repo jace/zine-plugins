@@ -1,4 +1,4 @@
-{% extends 'widgets/basemenu.html' %}
+{% extends 'widgets/base.html' %}
 {% block title %}{{ _('Archive') }}{% endblock %}
 {% block body %}
   {%- if not widget.empty %}
@@ -8,7 +8,7 @@
       month=item.month)|e }}">{{ item|monthformat }}</a></li>
   {%- endfor %}
   {%- if widget.more %}
-    <li><a href="{{ url_for('blog/archive')|e }}">{{ _("Complete archive") }}</a></li>
+    <li><a href="{{ url_for('blog/archive')|e }}">{{ _("Complete archive &rarr;") }}</a></li>
   {%- endif %}
   </ul>
   {%- endif %}

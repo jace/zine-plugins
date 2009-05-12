@@ -1,34 +1,41 @@
 {% macro render_entry_related(entry, comment_count=true) %}
-  {% set pipe = joiner('|') %}
-  {%- if entry.categories %} {{ pipe() }}
-    <span class="discreet">{{ _('Categories') }}:</span>
-    {% for category in entry.categories -%}
-      <a href="{{ url_for(category)|e }}">{{ category.name|e }}</a>
-      {%- if not loop.last %}, {% endif %}
-    {%- endfor %}
-  {%- endif %}
-  {%- if entry.tags %} {{ pipe() }}
-    <span class="discreet">{{ _('Tags') }}:</span>
-    {% for tag in entry.tags -%}
-      <a href="{{ url_for(tag)|e }}" rel="tag">{{ tag.name|e }}</a>
-      {%- if not loop.last %}, {% endif %}
-    {%- endfor %}
-  {% endif %}
   <ol class="post-footer">
+    {% if entry.is_private %}<li class="status">{{ _('Private') }}</li>{% endif -%}
+    {% if entry.is_protected %}<li class="status">{{ _('Protected') }}</li>{% endif -%}
     <li><a href="{{ url_for(entry)|e }}">{{ entry.pub_date|timeformat|e }}</a></li>
-    {%- if comment_count %}
+    {%- if comment_count -%}
       <li><a href="{{ url_for(entry)|e }}#comments">{% trans comments=entry.comment_count
         %}{{ comments }} comment{% pluralize %}{{ comments}} comments{% endtrans -%}</a></li>
-    {% endif %}
-    {%- if request.user.is_manager %}
+    {%- endif -%}
+    {%- if request.user.is_manager -%}
       <li><a href="{{ url_for('admin/edit_post', post_id=entry.id) }}">{{ _('Edit') }}</a></li>
-    {%- endif %}
+    {%- endif -%}
+    {%- if entry.extra.has_key('original_url') -%}
+      <li><a href="{{ entry.extra.original_url|e }}">{{ _('See Original') }} &rarr;</a></li>
+    {%- endif -%}
   </ol>
+  {% set pipe = joiner('|') %}
+  {%- if entry.categories %} {{ pipe() }}
+    <span class="categories">
+    {%- for category in entry.categories -%}
+      <a href="{{ url_for(category)|e }}" class="category">{{ category.name|e }}</a>
+      {%- if not loop.last %}, {% endif %}
+    {%- endfor -%}
+  </span>
+  {%- endif %}
+  {%- if entry.tags %} {{ pipe() }}
+    <span class="tags">
+    {%- for tag in entry.tags -%}
+      <a href="{{ url_for(tag)|e }}" rel="tag" class="tag">{{ tag.name|e }}</a>
+      {%- if not loop.last %}, {% endif %}
+    {%- endfor -%}
+    </span>
+  {% endif %}
 {% endmacro %}
 
-{% macro render_entry(entry, first=False) -%}
+{% macro render_entry(entry) -%}
   {{ emit_event('before-entry-rendered', entry) }}
-  <div class="{% if first %}first {% endif %}article entry">
+  <div class="entry">
     <p class="entrydate">{{ entry.pub_date|dateformat('full')|e }}
       {%- if entry.is_scheduled %}<br>[ {% trans
         time_span=entry.pub_date|timedeltaformat
@@ -43,9 +50,11 @@
         <p><a href="{{ url_for(entry)|e }}#extended">{{ _("Read on") }}...</a></p>
       {%- endif %}
     </div>
-    <p class="related">
+    <div class="clear"></div>
+    <div class="related">
       {{ render_entry_related(entry) }}
-    </p>
+    </div>
+    <div class="clear"></div>
   </div>
   {{ emit_event('after-entry-rendered', entry) }}
 {%- endmacro %}

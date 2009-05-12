@@ -1,0 +1,6 @@
+/* Workarounds for Internet Explorer */
+
+#comments li div.comment div.avatar img {
+    width: expression(this.width > 80 ? 80: true);
+    height: expression(this.width > 80 ? 80: true);
+}
