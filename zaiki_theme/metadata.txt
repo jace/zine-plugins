@@ -5,4 +5,4 @@ Author URL: http://jace.seacrow.com/
 License: BSD
 Version: 0.1
 Description: A theme based on the Fluid 960 CSS framework
-Preview: fluid960_theme::preview.png
+Preview: zaiki_theme::preview.png

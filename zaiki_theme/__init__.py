@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    zine.plugins.fluid960_theme
+    zine.plugins.zaiki_theme
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     A theme based on the Fluid 960 CSS framework.
@@ -24,9 +24,9 @@ THEME_SETTINGS = {
     'date.time_format.default': 'h:mm a'
     }
 
-class Fluid960Theme(Theme):
+class ZaikiTheme(Theme):
     """
-    Theme helper for the fluid960 theme.
+    Theme helper for the Zaiki theme.
     """
     def format_time(self, time=None, format=None):
         format = self._get_babel_format('time', format)
@@ -48,7 +48,7 @@ class Fluid960Theme(Theme):
             #: Return LiveJournal userpic
             return u"http://ljpic.seacrow.com/geturl?" + urlencode(
                 {'url': www})
-        return url_for('fluid960_theme/shared', filename='img/user.gif')
+        return url_for('zaiki_theme/shared', filename='img/user.gif')
 
     def amp(self, text):
         """
@@ -58,12 +58,12 @@ class Fluid960Theme(Theme):
     
 
 def setup(app, plugin):
-    theme = Fluid960Theme('fluid960', TEMPLATE_FILES, plugin.metadata,
+    theme = ZaikiTheme('zaiki', TEMPLATE_FILES, plugin.metadata,
                           THEME_SETTINGS)
     app.add_theme(theme)
     app.add_template_filter('timeformat', theme.format_time)
     app.add_template_filter('avatar', theme.avatar)
     app.add_template_filter('amp', theme.amp)
-    app.add_shared_exports('fluid960_theme', SHARED_FILES)
-    app.add_config_var('fluid960_theme/variation',
-                       forms.TextField(default=gray_variation))
+    app.add_shared_exports('zaiki_theme', SHARED_FILES)
+    #app.add_config_var('zaiki_theme/variation',
+    #                   forms.TextField(default=gray_variation))
