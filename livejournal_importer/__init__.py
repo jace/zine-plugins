@@ -375,6 +375,31 @@ class LiveJournalImporter(Importer):
                 elif 'current_moodid' in item['props']:
                     extras['current_mood'] = moodlist[int(item['props']
                                                             ['current_moodid'])]
+                if 'current_coords' in item['props']:
+                    if isinstance(item['props']['current_coords'],
+                                  xmlrpclib.Binary):
+                        extras['current_coords'] = unicode(item['props']
+                                            ['current_coords'].data, 'utf-8')
+                    else:
+                        extras['current_coords'] = unicode(str(item['props']
+                                                ['current_coords']), 'utf-8')
+                if 'current_location' in item['props']:
+                    if isinstance(item['props']['current_location'],
+                                  xmlrpclib.Binary):
+                        extras['current_location'] = unicode(item['props']
+                                            ['current_location'].data, 'utf-8')
+                    else:
+                        extras['current_location'] = unicode(str(item['props']
+                                                ['current_location']), 'utf-8')
+                if 'picture_keyword' in item['props']:
+                    if isinstance(item['props']['picture_keyword'],
+                                  xmlrpclib.Binary):
+                        extras['picture_keyword'] = unicode(item['props']
+                                            ['picture_keyword'].data, 'utf-8')
+                    else:
+                        extras['picture_keyword'] = unicode(str(item['props']
+                                                ['picture_keyword']), 'utf-8')
+                
                 extras['lj_post_id'] = item['itemid']
                 extras['original_url'] = item['url']
                 posts[item['itemid']] = Post(
@@ -402,7 +427,8 @@ class LiveJournalImporter(Importer):
                     comments_enabled=not item['props'].get(
                                                        'opt_nocomments', False),
                     pings_enabled=False, # LiveJournal did not support pings
-                    uid=item['itemid'],
+                    uid='livejournal;%s;%d' % (usejournal or username,
+                                               item['itemid']),
                     parser=item['props'].get('opt_preformatted', False) and
                                                         'html' or 'livejournal',
                     status=status,
