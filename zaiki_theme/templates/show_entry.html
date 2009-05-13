@@ -16,13 +16,35 @@
     </div>
     <div class="clear"></div>
   </div>
+  <script>
+	<!--//--><![CDATA[//><!--
+    $(document).ready(function() {
+      $("#flickr_illustrations").flickr({
+        api_key: "{{ cfg['zaiki_theme/flickr_api_key'] }}",
+        per_page: 20,
+        type: 'search',
+        tags: "{{ cfg['zaiki_theme/flickr_machinetag'] }}:post={{ entry.slug }}"
+      });
+    })
+	//--><!]]>  
+  </script>
+  <div class="entry" id="illustrations">
+    <div id="flickr_illustrations"></div>
+  </div>
   <div class="entry">
     {%- if entry.comments %}
       {{ render_comments(entry) }}
     {%- endif %}
     {%- if entry.comments_enabled %}
-      <h3 id="leave-reply">{{ _("Leave a Reply") }}</h3>
-      {{ render_comment_editor(entry, form) }}
+      <div class="leave_reply">
+        <h3 id="leave-reply">{{ _("Leave a Reply") }}</h3>
+        {{ render_comment_editor(entry, form) }}
+        <p>You can respond with a photo by tagging it on Flickr with
+          <input type="text" readonly="readonly" class="code"
+            size={{ cfg['zaiki_theme/flickr_machinetag']|length + entry.slug|length + 6 }}"
+            value="{{ cfg['zaiki_theme/flickr_machinetag'] }}:post={{ entry.slug }}">
+        </p>
+      </div>
     {%- endif %}
   </div>
 {% endblock %}

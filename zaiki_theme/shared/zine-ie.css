@@ -4,3 +4,13 @@
     width: expression(this.width > 80 ? 80: true);
     height: expression(this.width > 80 ? 80: true);
 }
+
+h1 a {
+    /* Since IE6/7 don't understand color: inherit; */
+    color: #c3c4c7;
+}
+
+.widget h3 a {
+    color: black;
+}
+

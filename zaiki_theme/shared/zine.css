@@ -41,7 +41,8 @@ h1 em, h2 em, h3 em, h4 em, h5 em, h6 em, p#tagline em {
     height: 100%;
     -moz-border-radius: 0.75em;
     -webkit-border-radius: 0.75em;
-    border-radius: 0.75em;    
+    border-radius: 0.75em;
+    margin-bottom: 1em;
 }
 
 a {
@@ -51,43 +52,84 @@ a {
     border-bottom: 1px solid #ccc;
 }
 
-.multiphoto img, .mainphoto img, .photo img, .sidepic img,
-img.photo, img.sidepic {
-    padding: 1em;
+a:hover {
+    border-bottom: 1px solid #999;
+}
+
+.flickr_badge_image {
+    margin: 0;
+    padding: 0;
+    display: inline;
+}
+
+#flickr_illustrations ul, #flickr_badge_wrapper ul {
+    list-style-type: none;
+    list-style-image: none;
+    list-style: none;
+}
+
+#flickr_illustrations ul li, #flickr_badge_wrapper ul li {
+    display: inline;
+    padding: 0;
+    margin-left: 0;
+}
+
+.multiphoto img, .mainphoto img, .photo img, .sidepic img, 
+.flickr_badge_image img, .avatar img, #flickr_illustrations img,
+#flickr_badge_wrapper img, img.photo, img.sidepic {
+    padding: 0.5em;
     background-color: #eee;
     -moz-border-radius: 0.5em;
     -webkit-border-radius: 0.5em;
-    border-radius: 0.5em;    
+    border-radius: 0.5em;
+    margin-right: 0.3em;
 }
 
-.mainphoto a, .photo a, .multiphoto a, .journalpic a, a.photo, a.journalpic {
+.mainphoto img {
+    padding: 1em;
+}
+
+#flickr_badge_wrapper img {
+    background-color: #ccc;
+}
+
+.widget a {
+    color: #005599;
     border-bottom: 0;
+    text-decoration: none;
 }
 
-.multiphoto img {
-    margin-right: 0.4em;
+.widget a:hover, .tag-cloud a:hover {
+    border-bottom: 1px solid #999;
 }
 
-h1 a, h2 a, h3 a, h4 a, h5 a, h6 a, .widget a, .tag-cloud a {
+.widget h3 a {
+    color: black;
+}
+
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a, .tag-cloud a {
     text-decoration: none;
     border-bottom: 0;
     color: inherit;
 }
 
-h1 a {
-    /* Since IE6/7 don't understand color: inherit; */
-    color: #c3c4c7;
+h1 a:hover {
+    border-bottom: 0;
 }
 
-.widget a:hover, .tag-cloud a:hover {
-    border-bottom: 1px solid #ccc;
+.mainphoto a, .photo a, .multiphoto a, .journalpic a, #flickr_badge_wrapper a,
+a.photo, a.journalpic, #flickr_illustrations a,
+.mainphoto a:hover, .photo a:hover, .multiphoto a:hover, .journalpic a:hover,
+#flickr_badge_wrapper a:hover, a:hover.photo, a:hover.journalpic,
+#flick_illustrations a:hover {
+    border-bottom: 0;
 }
 
 pre, div.comment {
     overflow: auto;
 }
 
-p, pre, ul, ol {
+p, pre, ul, ol, blockquote, form, dl, dd {
     margin-bottom: 1em;
 }
 
@@ -145,6 +187,10 @@ form.comments textarea {
     width: 100%;
 }
 
+input.code {
+    font-family: monospace;
+}
+
 #sidebar .widget {
     margin: 1em 1em 2em 1em;
 }
@@ -166,9 +212,10 @@ h3, h3 em, h3 i, h3 cite {
     border-bottom: 1px solid #8cacbb;
 } */
 
-#sidebar .widget dt, #sidebar .widget dd {
-    padding-left: 0.5em;
+#sidebar .widget dt, #sidebar .widget dd, #sidebar .widget dl {
+    /* padding-left: 0.3em; */
     margin-left: 0;
+    margin-bottom: 0;
 }
 
 h1 {
@@ -213,6 +260,7 @@ h2 {
 
 .entry h2 a:hover {
     color: #408db4;
+    border-bottom: 0;
 }
 
 .discreet {
@@ -268,6 +316,10 @@ p.entrydate {
 blockquote {
     font-size: 100%;
     font-family: inherit;
+    padding-left: 1em;
+    border-left: 0.5em solid #ccc;
+    margin-left: 0.2em;
+    color: #555;
 }
 
 pre {
@@ -318,7 +370,7 @@ pre {
 
 #comments p.meta {
     border-bottom: 1px solid #dddddd;
-    margin-left: 83px; /* Make space for avatar */
+    margin-left: 91px; /* Make space for avatar; see below */
 }
 
 #comments p.meta a {
@@ -348,13 +400,19 @@ pre {
 #comments li div.comment div.avatar {
     float: left;
     padding-right: 0.5em;
-    width: 80px;
-    height: 80px;
+    width: 88px;
+    height: 88px;
 }
 
 #comments li div.comment div.avatar img {
     max-width: 80px;
     max-height: 80px;
+    background-color: #ddd;
+    padding: 4px;
+}
+
+.leave_reply {
+    margin-top: 2em;
 }
 
 /* Pagination */
@@ -415,4 +473,52 @@ div.pagination a:hover {
 
 .post-footer li.status {
     font-weight: bold;
+}
+
+/* Twitter widget */
+#twitter_widget p#preloader {
+    padding-left: 3em;
+    background: transparent url("img/loader.gif") 1em center no-repeat;
+}
+
+#twitter_widget ul#twitter_update_list {
+	/* margin: 0;
+	padding: 0 1em 0.5em 1em; */
+	list-style-type: none;
+}
+
+#twitter_widget ul#twitter_update_list li {
+    margin-bottom: 1em;
+	/* margin: 0;
+	padding: 0.8em 0 1em 0;
+	border-bottom: 1px solid #ccc; */
+}
+
+#twitter_widget ul#twitter_update_list li a {
+	/* timestamp link */
+	color: #6A00A5;
+}
+
+#twitter_widget ul#twitter_update_list li span {
+	display: block;
+}
+
+#twitter_widget ul#twitter_update_list li span a {
+	/* links in tweet */
+	color: #005599;
+}
+
+#twitter_widget ul#twitter_update_list li.firstTweet {
+}
+
+#twitter_widget ul#twitter_update_list li.lastTweet {
+	border-bottom: none;
+}
+
+#twitter_widget a#profileLink {
+	display: none;
+	border-bottom: 1px solid transparent;
+	/* padding: 0.3em 1em;
+	color: #fff;
+	background-color: #888; */
 }

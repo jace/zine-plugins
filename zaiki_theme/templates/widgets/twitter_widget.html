@@ -1,0 +1,20 @@
+{% extends 'widgets/base.html' %}
+{% block title %}<a href="http://twitter.com/{{ cfg['zaiki_theme/twitter_user'] }}">{{ _('Twitter') }}</a>{% endblock %}
+{% block body %}
+  <script type="text/javascript">
+  <!--//--><![CDATA[//><!--
+  	$(document).ready(function() {
+  		$("#twitter").getTwitter({
+  			userName: "{{ cfg['zaiki_theme/twitter_user'] }}",
+  			numTweets: 5,
+  			loaderText: "{{ _('Loading tweets...') }}",
+  			slideIn: true,
+  			showHeading: false,
+  			headingText: "{{ _('Latest Tweets') }}",
+  			showProfileLink: true
+  		});
+  	});
+  //--><!]]>
+  </script>
+  <div id="twitter"></div>
+{% endblock %}

@@ -7,9 +7,13 @@
   <link rel="stylesheet" type="text/css" href="{{ shared_url('zaiki_theme::960/grid.css') }}" media="screen">
   <link rel="stylesheet" type="text/css" href="{{ shared_url('zaiki_theme::zine.css') }}" media="screen">
 	<!--[if IE 6]><link rel="stylesheet" type="text/css" href="{{ shared_url('zaiki_theme::960/ie6.css') }}" media="screen">
-	              <link rel="stylesheet" type="text/css" href="{{ shared_url('zaiki_theme::zine-ie.css') }}" media="screen"><![endif]-->
-	<!--[if gte IE 7]><link rel="stylesheet" type="text/css" href="{{ shared_url('zaiki_theme::960/ie.css') }}" media="screen"><![endif]-->
+                <link rel="stylesheet" type="text/css" href="{{ shared_url('zaiki_theme::zine-ie.css') }}" media="screen"><![endif]-->
+	<!--[if gte IE 7]><link rel="stylesheet" type="text/css" href="{{ shared_url('zaiki_theme::960/ie.css') }}" media="screen">
+                <link rel="stylesheet" type="text/css" href="{{ shared_url('zaiki_theme::zine-ie.css') }}" media="screen"><![endif]-->
   {{ get_page_metadata() }}
+  <!-- Twitter widget -->
+  <script type="text/javascript" src="{{ shared_url('zaiki_theme::js/jquery.twitter.js') }}"></script>
+	<script type="text/javascript" src="{{ shared_url('zaiki_theme::js/jquery.flickr-1.0.js') }}"></script>	
 </head>
 <body>
   <div id="header">
@@ -34,10 +38,10 @@
   </div>
   <div id="footer">
     <div class="container_16">
-      <div class="grid_4">
-        {{ widgets.post_archive_summary('months', 5, show_title=true) }}
+      <div class="grid_8">
+        {{ widgets.post_archive_summary('months', 4, show_title=true) }}
       </div>
-      <div class="grid_4">
+      <div class="grid_8">
         {{ widgets.latest_posts(show_title=true) }}
       </div>
       <div class="clear"></div>
@@ -45,7 +49,7 @@
   </div>
   <div class="container_16">
     <div class="grid_16" id="copyright">
-      <p>{% trans zine='<a href="http://zine.pocoo.org/">Zine</a>'
+      <p>{{ cfg['zaiki_theme/copyright'] }} {{cfg['zaiki_theme/license'] }} {% trans zine='<a href="http://zine.pocoo.org/">Zine</a>'
         %}Proudly powered by {{ zine }}.{% endtrans %}</p>
     </div>
     <div class="clear"></div>

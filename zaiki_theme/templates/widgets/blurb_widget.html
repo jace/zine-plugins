@@ -1,0 +1,7 @@
+{% extends 'widgets/base.html' %}
+{% block title %}{{ _('About') }}{% endblock %}
+{% block body %}
+  <div id="blurb">
+    {{ cfg['zaiki_theme/blurb']|e }}
+  </div>
+{% endblock %}

@@ -11,7 +11,7 @@
       <li><a href="{{ url_for('admin/edit_post', post_id=entry.id) }}">{{ _('Edit') }}</a></li>
     {%- endif -%}
     {%- if entry.extra.has_key('original_url') -%}
-      <li><a href="{{ entry.extra.original_url|e }}">{{ _('See Original') }} &rarr;</a></li>
+      <li><a href="{{ entry.extra.original_url|e }}">{{ _('Visit Original') }} &rarr;</a></li>
     {%- endif -%}
   </ol>
   {% set pipe = joiner('|') %}

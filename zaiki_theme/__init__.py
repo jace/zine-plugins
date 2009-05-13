@@ -14,6 +14,7 @@ try: from hashlib import md5
 except ImportError: from md5 import new as md5
 from werkzeug import escape
 from zine.api import url_for, _
+from zine.widgets import Widget
 import zine.i18n
 from zine.application import Theme
 from zine.utils import forms
@@ -23,6 +24,27 @@ SHARED_FILES = os.path.join(os.path.dirname(__file__), 'shared')
 THEME_SETTINGS = {
     'date.time_format.default': 'h:mm a'
     }
+
+
+class SimpleWidget(Widget):
+    def __init__(self, show_title=False):
+        self.show_title = show_title
+
+
+class BlurbWidget(SimpleWidget):
+    name = 'blurb_widget'
+    template = 'widgets/blurb_widget.html'
+
+
+class FlickrWidget(SimpleWidget):
+    name = 'flickr_widget'
+    template = 'widgets/flickr_widget.html'
+
+
+class TwitterWidget(SimpleWidget):
+    name = 'twitter_widget'
+    template = 'widgets/twitter_widget.html'
+
 
 class ZaikiTheme(Theme):
     """
@@ -65,5 +87,29 @@ def setup(app, plugin):
     app.add_template_filter('avatar', theme.avatar)
     app.add_template_filter('amp', theme.amp)
     app.add_shared_exports('zaiki_theme', SHARED_FILES)
-    #app.add_config_var('zaiki_theme/variation',
-    #                   forms.TextField(default=gray_variation))
+    app.add_config_var('zaiki_theme/blurb', forms.TextField(
+                       widget=forms.Textarea))
+    app.add_config_var('zaiki_theme/blurb_more_page', forms.TextField(
+                       default='about'))
+    app.add_config_var('zaiki_theme/copyright', forms.TextField())
+    app.add_config_var('zaiki_theme/license', forms.TextField())
+    
+    # Widgets
+    app.add_widget(BlurbWidget)
+    app.add_widget(FlickrWidget)
+    app.add_widget(TwitterWidget)
+
+    # Flickr widget
+    app.add_config_var('zaiki_theme/flickr_machinetag', forms.TextField())
+    app.add_config_var('zaiki_theme/flickr_user', forms.TextField())
+    app.add_config_var('zaiki_theme/flickr_api_key', forms.TextField())
+    app.add_config_var('zaiki_theme/flickr_api_secret', forms.TextField())
+    app.add_config_var('zaiki_theme/flickr_pic_count', forms.IntegerField(
+                       default=6))
+    app.add_config_var('zaiki_theme/flickr_pic_display', forms.TextField(
+                       default='random'))
+    app.add_config_var('zaiki_theme/flickr_pic_size', forms.TextField(
+                       default='s'))
+
+    # Twitter widget
+    app.add_config_var('zaiki_theme/twitter_user', forms.TextField())
