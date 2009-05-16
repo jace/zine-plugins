@@ -118,10 +118,10 @@ h1 a:hover {
 }
 
 .mainphoto a, .photo a, .multiphoto a, .journalpic a, #flickr_badge_wrapper a,
-a.photo, a.journalpic, #flickr_illustrations a, .widepic a,
+a.photo, a.journalpic, #flickr_illustrations a, a.widepic, .widepic a,
 .mainphoto a:hover, .photo a:hover, .multiphoto a:hover, .journalpic a:hover,
 #flickr_badge_wrapper a:hover, a:hover.photo, a:hover.journalpic,
-#flick_illustrations a:hover, .widepic a:hover {
+#flick_illustrations a:hover, a:hover.widepic, .widepic a:hover {
     border-bottom: 0;
 }
 
