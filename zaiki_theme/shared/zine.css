@@ -12,9 +12,9 @@ body {
     margin-right: auto;
 }
 
-i, em, cite {
+/* i, em, cite {
     font-family: "Lucida Sans", "DejaVu Sans", "Bitstream Vera Sans", Verdana, sans-serif;
-}
+} */
 
 h1, h2, h3, h4, h5, h6, p#tagline,
 h1 em, h2 em, h3 em, h4 em, h5 em, h6 em, p#tagline em {
@@ -74,9 +74,9 @@ a:hover {
     margin-left: 0;
 }
 
-.multiphoto img, .mainphoto img, .photo img, .sidepic img, 
+.multiphoto img, .mainphoto img, .photo img, .sidepic img, .widepic img,
 .flickr_badge_image img, .avatar img, #flickr_illustrations img,
-#flickr_badge_wrapper img, img.photo, img.sidepic {
+#flickr_badge_wrapper img, img.photo, img.sidepic, img.widepic {
     padding: 0.5em;
     background-color: #eee;
     -moz-border-radius: 0.5em;
@@ -118,10 +118,10 @@ h1 a:hover {
 }
 
 .mainphoto a, .photo a, .multiphoto a, .journalpic a, #flickr_badge_wrapper a,
-a.photo, a.journalpic, #flickr_illustrations a,
+a.photo, a.journalpic, #flickr_illustrations a, .widepic a,
 .mainphoto a:hover, .photo a:hover, .multiphoto a:hover, .journalpic a:hover,
 #flickr_badge_wrapper a:hover, a:hover.photo, a:hover.journalpic,
-#flick_illustrations a:hover {
+#flick_illustrations a:hover, .widepic a:hover {
     border-bottom: 0;
 }
 
@@ -134,20 +134,32 @@ p, pre, ul, ol, blockquote, form, dl, dd {
 }
 
 ol {
-	list-style-type: decimal;
+    list-style-type: decimal;
 }
 
 ul {
-	list-style-type: square;
-    list-style-image: url(img/bullet.png);
+    list-style-type: square;
+    /* list-style-image: url(img/bullet.png); */
 }
 
-ul li {
-	margin-left: 1.5em;
-}
-
-ol li {
+ul li, ol li {
     margin-left: 1cm;
+}
+
+big {
+    font-size: larger;
+}
+
+small, sub, sup {
+    font-size: smaller;
+}
+
+sub {
+    vertical-align: sub;
+}
+
+sup {
+    vertical-align: super;
 }
 
 .widget ul {
@@ -267,7 +279,7 @@ h2 {
     color: #76797c;
 }
 
-.mainphoto, .photo, .multiphoto {
+.mainphoto, .photo, .multiphoto, .widepic {
     color: #76797c;
     font-size: 0.85em;
     margin: 0.5em 1em 1em 0;

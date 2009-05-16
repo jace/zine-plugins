@@ -1,5 +1,6 @@
 {% macro render_entry_related(entry, comment_count=true) %}
   <ol class="post-footer">
+    {% if entry.is_draft %}<li class="status">{{ _('Draft') }}</li>{% endif -%}
     {% if entry.is_private %}<li class="status">{{ _('Private') }}</li>{% endif -%}
     {% if entry.is_protected %}<li class="status">{{ _('Protected') }}</li>{% endif -%}
     <li><a href="{{ url_for(entry)|e }}">{{ entry.pub_date|timeformat|e }}</a></li>
