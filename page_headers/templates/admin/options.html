@@ -1,0 +1,15 @@
+{% extends "admin/layout.html" %}
+{% block title %}{{ _("Common Page Headers") }}{% endblock %}
+{% block contents %}
+  <h1>{{ _("Common Page Headers") }}</h1>
+  <p>{% trans %}
+    Use this form to configure options for common page headers, such as for
+    Google Analytics and GeoURL.
+  {% endtrans %}</p>
+  {% call form() %}
+    {{ form.as_dl() }}
+    <div class="actions">
+      <input type="submit" value="{{ _('Save') }}">
+    </div>
+  {% endcall %}
+{% endblock %}

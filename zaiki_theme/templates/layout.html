@@ -2,7 +2,10 @@
   "http://www.w3.org/TR/html4/strict.dtd">
 <html lang="{{ cfg.language|e }}">
 <head>
+  {%block titletags -%}
   <title>{% block title %}{% endblock %} &mdash; {{ cfg.blog_title|e }}</title>
+  <meta name="DC.title" content="{{ self.title() }} &mdash; {{ cfg.blog_title|e }}">
+  {%- endblock %}
   <link rel="stylesheet" type="text/css" href="{{ shared_url('zaiki_theme::960/reset.css') }}" media="screen">
   <link rel="stylesheet" type="text/css" href="{{ shared_url('zaiki_theme::960/grid.css') }}" media="screen">
   <link rel="stylesheet" type="text/css" href="{{ shared_url('zaiki_theme::zine.css') }}" media="screen">

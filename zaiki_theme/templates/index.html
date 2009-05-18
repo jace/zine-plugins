@@ -1,5 +1,9 @@
 {% extends "layout.html" %}
-{% block title %}{{ _("Index") }}{% endblock %}
+{% block titletags %}
+<title>{{ cfg.blog_title|e }}</title>
+<meta name="DC.title" content="{{ cfg.blog_title|e }}">
+<meta name="DC.description" content="{{ cfg.blog_tagline|e }}">
+{% endblock %}
 {% from "_entry.html" import render_entry %}
 {% block contents %}
   {%- for post in posts %}

@@ -1,0 +1,8 @@
+Name: Common Page Headers
+Plugin URL: http://bitbucket.org/jace/zine-plugins/
+Author: Kiran Jonnalagadda <jace@pobox.com>
+Author URL: http://jace.zaiki.in/
+License: BSD
+Version: 0.1
+Description: This plugin inserts headers into pages for common functions such \
+  as Google Analytics.
