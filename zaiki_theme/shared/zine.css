@@ -335,8 +335,9 @@ blockquote {
 }
 
 pre {
-    border: 1px solid #dddddd;
-    background: #f6f6f6;
+    border-top: 1px solid #dddddd;
+    border-bottom: 1px solid #dddddd;
+    background: #f8f8f8;
     padding: 0.5em;
 }
 
