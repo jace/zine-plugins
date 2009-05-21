@@ -209,6 +209,7 @@ input.code {
 
 h3, h3 em, h3 i, h3 cite {
     font-family: "Fontin Sans", "Lucida Grande", "DejaVu Sans", "Bitstream Vera Sans", "Lucida Sans", Verdana, sans-serif;
+    font-weight: bold;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     margin-top: 1em;
@@ -276,7 +277,7 @@ h2 {
 }
 
 .entry h3 {
-    margin-top: 2em;
+    margin-top: 1.7em;
 }
 
 .discreet {
@@ -576,4 +577,15 @@ div.pagination a:hover {
 	/* padding: 0.3em 1em;
 	color: #fff;
 	background-color: #888; */
+}
+
+/* Embedded fonts using CSS3 */
+@font-face {
+    /* A font by Jos Buivenga (exljbris) -> www.exljbris.nl */
+    font-family: "Fontin Sans";
+    src: local("Fontin Sans"), url(fonts/Fontin_Sans_B_45b.otf) format("opentype");
+    font-style: normal;
+    font-weight: bold;
+    font-variant: normal;
+    font-stretch: normal;
 }
