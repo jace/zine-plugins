@@ -54,7 +54,7 @@ class ZaikiTheme(Theme):
         format = self._get_babel_format('time', format)
         return zine.i18n.format_time(time, format)
 
-    def avatar(self, comment):
+    def avatar(self, comment, size=80):
         if comment.user is None:
             email = comment._email
             www = comment._www
@@ -65,7 +65,7 @@ class ZaikiTheme(Theme):
             #: Return Gravatar URL
             return u"http://www.gravatar.com/avatar.php?" + urlencode(
                 {'gravatar_id':md5(email).hexdigest(),
-                 'size': 80, 'default': 'identicon'})
+                 'size': size, 'default': 'identicon'})
         elif www and www.find('livejournal.com') != -1:
             #: Return LiveJournal userpic
             return u"http://ljpic.seacrow.com/geturl?" + urlencode(
