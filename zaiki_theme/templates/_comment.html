@@ -83,7 +83,6 @@
     {{ emit_event('before-comment-editor-buttons-rendered', post) }}
     <div class="actions">
       <input type="submit" value="{{ _('Submit Comment') }}">
-      <input type="reset" value="{{ _('Reset Form') }}">
     </div>
     {{ emit_event('after-comment-editor-rendered', post) }}
   {%- endcall %}
