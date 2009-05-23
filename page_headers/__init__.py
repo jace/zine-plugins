@@ -34,8 +34,7 @@ def inject_headers(req):
         add_meta(name='verify-v1', content=cfg[CFG_GOOGLE_SITEMAPS_VERIFY])
 
     # Insert Google Analytics snippet
-    # TODO: Don't insert for admin pages. How do we know this is an admin page?
-    if cfg[CFG_GOOGLE_ANALYTICS_ID]:
+    if cfg[CFG_GOOGLE_ANALYTICS_ID] and not (req.user and req.user.is_manager):
         add_header_snippet("""
         <script type="text/javascript">
         var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
@@ -45,8 +44,7 @@ def inject_headers(req):
         try {
         var pageTracker = _gat._getTracker("%s");
         pageTracker._trackPageview();
-        } catch(err) {}</script>
-        """ % escape(cfg[CFG_GOOGLE_ANALYTICS_ID]))
+        } catch(err) {}</script>""" % escape(cfg[CFG_GOOGLE_ANALYTICS_ID]))
 
 
 class ConfigurationForm(forms.Form):

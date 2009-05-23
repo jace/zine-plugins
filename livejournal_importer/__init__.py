@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os.path
 import re
 import xmlrpclib
@@ -165,29 +166,32 @@ class LiveJournalImportForm(forms.Form):
         default=IMPORT_JOURNAL, required=True,
         widget=forms.RadioButtonGroup)
     community = forms.TextField(lazy_gettext(u'Community name'))
-    security_choices = [(SECURITY_DISCARD, lazy_gettext(u'Discard')),
-                        (SECURITY_PRIVATE, lazy_gettext(u'Make Private')),
-                        (SECURITY_PROTECTED, lazy_gettext(u'Make Protected')),
-                        (SECURITY_PUBLIC, lazy_gettext(u'Make Public'))]
+    security_choices = [(SECURITY_DISCARD, lazy_gettext(u'Don’t import')),
+                        (SECURITY_PRIVATE, lazy_gettext(u'Private')),
+                        (SECURITY_PROTECTED, lazy_gettext(u'Protected')),
+                        (SECURITY_PUBLIC, lazy_gettext(u'Public'))]
     security_custom = forms.ChoiceField(lazy_gettext(
             u'Convert custom-security entries to'), choices=security_choices,
             help_text=lazy_gettext(u'Zine only supports public, private and '\
                                    u'protected entries, so you must choose '\
                                    u'what to do with your custom security '\
                                    u'entries.'))
-    categories = forms.Multiple(forms.ModelField(zine.models.Category, 'id'),
+    categories = forms.Multiple(forms.TextField(),
                                 lazy_gettext(u'Categories'),
                                 help_text=lazy_gettext(u'Choose categories to '\
-                                                       u'assign imported '\
-                                                       u'posts to.'),
+                                                  u'assign imported posts to.'),
                                 widget=forms.CheckboxGroup)
-    getcomments = forms.BooleanField(lazy_gettext(u'Download Comments?'),
-                                     default=True,
-                                     help_text = lazy_gettext(u'Note: Comments '\
-                                                              u'cannot be '\
-                                                              u'downloaded '\
-                                                              u'for entries in '\
-                                                              u'communities.'))
+    getcomments = forms.BooleanField(lazy_gettext(u'Download Comments?'))
+
+    def __init__(self, initial=None):
+        initial = forms.fill_dict(initial,
+            getcomments=True,
+            import_what=IMPORT_JOURNAL,
+            security_custom=SECURITY_PROTECTED,
+        )
+        self.categories.choices = [(c.name, c.name) for c in
+                                   zine.models.Category.query.all()]
+        forms.Form.__init__(self, initial)
 
     def context_validate(self, data):
         lj = LiveJournalConnect(data['username'], data['password'])
@@ -434,7 +438,7 @@ class LiveJournalImporter(Importer):
                     status=status,
                     extra=extras
                     )
-                yield _(u'<li>%s <em>(by %s on %s)</em></li>') % (subject, poster, pub_date)
+                yield _(u'<li>%s <em>(by %s on %s)</em></li>') % (subject, poster, pub_date.strftime('%Y-%m-%d %H:%M'))
             # Done processing batch.
             yield _(u'</ol>')
             sync_left = [sync_data[x] for x in sync_data
@@ -444,7 +448,7 @@ class LiveJournalImporter(Importer):
                             timedelta(seconds=1)).strftime('%Y-%m-%d %H:%M:%S')
 
         # ------------------------------------------------------------------
-        if getcomments and usejournal == None:
+        if getcomments:
             yield _(u"<p>Importing comments...</p>")
 
             #: Get session key to use for the HTTP request to retrieve comments.
@@ -471,8 +475,9 @@ class LiveJournalImporter(Importer):
                 #: See http://www.livejournal.com/developer/exporting.bml and
                 #: http://www.livejournal.com/doc/server/ljp.csp.export_comments.html
                 conn = HTTPHandler(urlparse.urlsplit(
-                    LIVEJOURNAL_COMMENTS + '?get=comment_meta&startid=%d' %
-                    (c_startid)), timeout=TIMEOUT, method='GET')
+                    LIVEJOURNAL_COMMENTS + '?get=comment_meta&startid=%d%s' %
+                    (c_startid, usejournal and '&authas=%s'%usejournal or '')),
+                    timeout=TIMEOUT, method='GET')
                 conn.headers.extend(headers)
                 yield _(u'<p>Retrieving comment metadata starting from %d...</p>') % c_startid
                 c_metadata = etree.fromstring(conn.open().data)
@@ -516,8 +521,9 @@ class LiveJournalImporter(Importer):
             comments = {} # Holds Comment objects.
             while c_startid <= c_maxid:
                 conn = HTTPHandler(urlparse.urlsplit(
-                    LIVEJOURNAL_COMMENTS + '?get=comment_body&startid=%d' %
-                    (c_startid)), timeout=TIMEOUT, method='GET')
+                    LIVEJOURNAL_COMMENTS + '?get=comment_body&startid=%d%s' %
+                    (c_startid, usejournal and "&authas=%s"%usejournal or '')),
+                    timeout=TIMEOUT, method='GET')
                 conn.headers.extend(headers)
                 yield _(u'<p>Retrieving comment bodies starting from %d...</p>') % c_startid
                 yield _(u'<ol>')
@@ -634,7 +640,6 @@ class LiveJournalImporter(Importer):
 
         return self.render_admin_page('admin/import_livejournal.html',
                                       form=form.as_widget())
-
 
 
 def setup(app, plugin):
