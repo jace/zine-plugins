@@ -1,6 +1,5 @@
 import os.path
 from werkzeug import escape
-from werkzeug.exceptions import NotFound
 from zine.api import *
 from zine.views.admin import flash, render_admin_response
 from zine.privileges import BLOG_ADMIN, require_privilege
@@ -22,7 +21,7 @@ def inject_headers(request):
     
     try:
         endpoint, endpointargs = app.url_adapter.match(request.path)
-    except NotFound:
+    except:
         endpoint = '' # endpoint must be a string for ''.startswith() test
         endpointargs = None
 
