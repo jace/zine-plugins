@@ -11,7 +11,7 @@
           trans %}Anonymous{% endtrans %}</span>{%
           else %}<span class="author">{{ comment.author|e }}</span>{% endif %} &mdash; {{
           comment.pub_date|datetimeformat }} &mdash;
-          <a href="#comment-{{ comment.id
+          <a name="comment-{{ comment.id }}" href="#comment-{{ comment.id
           }}" title="{{ _('link to this comment') }}">#</a>
           {%- if add_reply_link %}
             <a href="javascript:Zine.replyToComment({{ comment.id

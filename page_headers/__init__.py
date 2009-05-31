@@ -1,5 +1,6 @@
 import os.path
 from werkzeug import escape
+from werkzeug.exceptions import NotFound
 from zine.api import *
 from zine.views.admin import flash, render_admin_response
 from zine.privileges import BLOG_ADMIN, require_privilege
@@ -11,27 +12,46 @@ CFG_GEO_POSITION = 'geo_position'
 CFG_GEO_REGION = 'geo_region'
 CFG_GOOGLE_ANALYTICS_ID = 'google_analytics_id'
 CFG_GOOGLE_SITEMAPS_VERIFY = 'google_sitemaps_verify'
+CFG_OPENID_DELEGATE = 'openid_delegate'
+CFG_OPENID_SERVER = 'openid_server'
 
-def inject_headers(req):
+def inject_headers(request):
     """Add headers to each page."""
-    cfg = req.app.cfg
+    app = request.app
+    cfg = app.cfg
+    
+    try:
+        endpoint, endpointargs = app.url_adapter.match(request.path)
+    except NotFound:
+        endpoint = '' # endpoint must be a string for ''.startswith() test
+        endpointargs = None
 
-    # Insert page coordinates
-    # TODO: Check if someone else has already inserted geo coordinates for
-    # a specific page, and avoid overriding if so. For this, we need to import
-    # local from zine.utils and iterate through local.page_metadata looking for
-    # item[0] == 'meta' and item[1]['name'] in ['ICBM, 'geo.location']. We're
-    # not doing it for now because it doesn't seem very efficient.
-    if cfg[CFG_GEO_POSITION]:
-        add_meta(name='ICBM', content=','.join(cfg[CFG_GEO_POSITION]))
-        add_meta(name='geo.position', content=';'.join(cfg[CFG_GEO_POSITION]))
-    if cfg[CFG_GEO_REGION]:
-        add_meta(name='geo.region', content=cfg[CFG_GEO_REGION])
+    # Insert headers meant only for the front page.
+    if endpoint == 'blog/index':
+        # Insert page coordinates
+        # TODO: Check if someone else has already inserted geo coordinates for
+        # a specific page, and avoid overriding if so. For this, we need to
+        # import local from zine.utils and iterate through local.page_metadata
+        # looking for item[0] == 'meta' and item[1]['name'] in ['ICBM,
+        # 'geo.location']. We're not doing it for now because it doesn't seem
+        # very efficient.
+        if cfg[CFG_GEO_POSITION]:
+            add_meta(name='ICBM', content=','.join(cfg[CFG_GEO_POSITION]))
+            add_meta(name='geo.position',
+                     content=';'.join(cfg[CFG_GEO_POSITION]))
+        if cfg[CFG_GEO_REGION]:
+            add_meta(name='geo.region', content=cfg[CFG_GEO_REGION])
 
+        # Insert OpenID delegation headers
+        if cfg[CFG_OPENID_SERVER] and cfg[CFG_OPENID_DELEGATE]:
+            add_link(rel='openid.delegate', href=cfg[CFG_OPENID_DELEGATE],
+                     type=None)
+            add_link(rel='openid.server', href=cfg[CFG_OPENID_SERVER],
+                     type=None)
 
-    # Insert Google sitemaps verification header
-    if cfg[CFG_GOOGLE_SITEMAPS_VERIFY]:
-        add_meta(name='verify-v1', content=cfg[CFG_GOOGLE_SITEMAPS_VERIFY])
+        # Insert Google sitemaps verification header
+        if cfg[CFG_GOOGLE_SITEMAPS_VERIFY]:
+            add_meta(name='verify-v1', content=cfg[CFG_GOOGLE_SITEMAPS_VERIFY])
 
     # Insert Google Analytics snippet
     if cfg[CFG_GOOGLE_ANALYTICS_ID] and not (req.user and req.user.is_manager):
@@ -55,6 +75,9 @@ class ConfigurationForm(forms.Form):
     google_analytics_id = forms.TextField(
                                         _(u'Google Analytics Web Property Id'))
     google_sitemaps_verify = forms.TextField(_(u'Google Sitemaps Verify Code'))
+    openid_delegate = forms.TextField(_(u'OpenID Delegation Id'))
+    openid_server = forms.TextField(_(u'OpenID Delegation Server Endpoint'))
+
 
 @require_privilege(BLOG_ADMIN)
 def show_pageheaders_config(req):
@@ -65,6 +88,8 @@ def show_pageheaders_config(req):
             geo_region = cfg[CFG_GEO_REGION],
             google_analytics_id = cfg[CFG_GOOGLE_ANALYTICS_ID],
             google_sitemaps_verify = cfg[CFG_GOOGLE_SITEMAPS_VERIFY],
+            openid_delegate = cfg[CFG_OPENID_DELEGATE],
+            openid_server = cfg[CFG_OPENID_SERVER],
             ))
 
     if req.method == 'POST' and form.validate(req.form):
@@ -74,6 +99,8 @@ def show_pageheaders_config(req):
             cfg[CFG_GEO_REGION] = form['geo_region']
             cfg[CFG_GOOGLE_ANALYTICS_ID] = form['google_analytics_id']
             cfg[CFG_GOOGLE_SITEMAPS_VERIFY] = form['google_sitemaps_verify']
+            cfg[CFG_OPENID_DELEGATE] = form['openid_delegate']
+            cfg[CFG_OPENID_SERVER] = form['openid_server']
             cfg.commit()
             flash(_('Page header settings saved.'), 'ok')
     return render_admin_response('admin/options.html',
@@ -99,8 +126,9 @@ def setup(app, plugin):
                                                 forms.TextField(), default=[]))
     app.add_config_var(CFG_GOOGLE_ANALYTICS_ID, forms.TextField(default=u''))
     app.add_config_var(CFG_GOOGLE_SITEMAPS_VERIFY, forms.TextField(default=u''))
+    app.add_config_var(CFG_OPENID_DELEGATE, forms.TextField(default=u''))
+    app.add_config_var(CFG_OPENID_SERVER, forms.TextField(default=u''))
     app.add_url_rule('/options/pageheaders', prefix='admin',
                      endpoint='page_headers/config',
                      view=show_pageheaders_config)
     app.add_template_searchpath(TEMPLATES)
-    

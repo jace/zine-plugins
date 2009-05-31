@@ -3,5 +3,8 @@
 {% block body %}
   <div id="blurb">
     {{ cfg['zaiki_theme/blurb']|e }}
+    {% if widget.blurbpage -%}
+      <a href="{{ url_for(widget.blurbpage)|e }}"><strong>More &rarr;</strong></a>
+    {%- endif %}
   </div>
 {% endblock %}

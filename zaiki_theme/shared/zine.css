@@ -66,6 +66,7 @@ a:hover {
     list-style-type: none;
     list-style-image: none;
     list-style: none;
+    margin-left: 0;
 }
 
 #flickr_illustrations ul li, #flickr_badge_wrapper ul li {
@@ -142,7 +143,7 @@ ul {
     /* list-style-image: url(img/bullet.png); */
 }
 
-ul li, ol li {
+ul, ol {
     margin-left: 1cm;
 }
 
@@ -165,6 +166,7 @@ sup {
 .widget ul {
     list-style-type: none;
     list-style-image: none;
+    margin-left: 0;
 }
 
 .widget ul li {
@@ -221,16 +223,6 @@ h3, h3 em, h3 i, h3 cite {
     margin-bottom: 1em;
 }
 
-/* .widget dt {
-    border-bottom: 1px solid #8cacbb;
-} */
-
-#sidebar .widget dt, #sidebar .widget dd, #sidebar .widget dl {
-    /* padding-left: 0.3em; */
-    margin-left: 0;
-    margin-bottom: 0;
-}
-
 h1 {
 	font-weight: normal;
 	font-size: 2.5em;
@@ -282,6 +274,7 @@ h2 {
 
 .discreet {
     color: #76797c;
+    font-size: 85%;
 }
 
 .mainphoto, .photo, .multiphoto, .widepic {
@@ -546,6 +539,7 @@ div.pagination a:hover {
 	/* margin: 0;
 	padding: 0 1em 0.5em 1em; */
 	list-style-type: none;
+	margin-left: 0;
 }
 
 #twitter_widget ul#twitter_update_list li {

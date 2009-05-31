@@ -13,11 +13,12 @@ from urllib import urlencode
 try: from hashlib import md5
 except ImportError: from md5 import new as md5
 from werkzeug import escape
-from zine.api import url_for, _
+from zine.api import url_for, get_application, _
 from zine.widgets import Widget
 import zine.i18n
 from zine.application import Theme
 from zine.utils import forms
+from zine.models import Post
 
 TEMPLATE_FILES = os.path.join(os.path.dirname(__file__), 'templates')
 SHARED_FILES = os.path.join(os.path.dirname(__file__), 'shared')
@@ -31,9 +32,18 @@ class SimpleWidget(Widget):
         self.show_title = show_title
 
 
-class BlurbWidget(SimpleWidget):
+class BlurbWidget(Widget):
     name = 'blurb_widget'
     template = 'widgets/blurb_widget.html'
+
+    def __init__(self, show_title=False):
+        self.show_title = show_title
+        cfg = get_application().cfg
+        slug = cfg['zaiki_theme/blurb_more_page']
+        if slug:
+            self.blurbpage = Post.query.filter_by(slug=slug).first()
+        else:
+            self.blurbpage = None
 
 
 class FlickrWidget(SimpleWidget):

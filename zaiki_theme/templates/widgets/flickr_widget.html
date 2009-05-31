@@ -4,9 +4,9 @@
   <div id="flickr_badge_wrapper">
     <!-- Load Flickr images last. -->
     <!-- script type="text/javascript" src="http://www.flickr.com/badge_code_v2.gne?count={{ cfg['zaiki_theme/flickr_pic_count']|e }}&amp;display={{ cfg['zaiki_theme/flickr_pic_display']|e }}&amp;size={{ cfg['zaiki_theme/flickr_pic_size']|e }}&amp;layout=x&amp;source=user&amp;user={{ cfg['zaiki_theme/flickr_user']|e }}"><script -->
-    <noscript>Visit the site to <a href="http://flickr.com/photos/{{ cfg['zaiki_theme/flickr_user']|e }}">see them</a>.</noscript>
+    <noscript><p>Visit the site to <a href="http://flickr.com/photos/{{ cfg['zaiki_theme/flickr_user']|e }}">see them</a>.</p></noscript>
   </div>
-  <script>
+  <script type="text/javascript">
 	<!--//--><![CDATA[//><!--
     $(document).ready(function() {
       $("#flickr_badge_wrapper").flickr({
