@@ -53,7 +53,7 @@ def inject_headers(request):
             add_meta(name='verify-v1', content=cfg[CFG_GOOGLE_SITEMAPS_VERIFY])
 
     # Insert Google Analytics snippet
-    if cfg[CFG_GOOGLE_ANALYTICS_ID] and not (req.user and req.user.is_manager):
+    if cfg[CFG_GOOGLE_ANALYTICS_ID] and not (request.user and request.user.is_manager):
         add_header_snippet("""
         <script type="text/javascript">
         var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
