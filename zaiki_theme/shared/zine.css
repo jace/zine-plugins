@@ -384,6 +384,10 @@ table.listing {
 
 /* Comments */
 
+ul#comments {
+    margin-left: 0;
+}
+
 #comments, #comments ul {
     list-style-image: none;
     list-style-type: none;
