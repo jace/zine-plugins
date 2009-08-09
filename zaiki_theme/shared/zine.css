@@ -209,6 +209,10 @@ input.code {
     margin: 1em 1em 2em 1em;
 }
 
+.widgetbody {
+    overflow: hidden;
+}
+
 h3, h3 em, h3 i, h3 cite {
     font-family: "Fontin Sans", "Lucida Grande", "DejaVu Sans", "Bitstream Vera Sans", "Lucida Sans", Verdana, sans-serif;
     font-weight: bold;
