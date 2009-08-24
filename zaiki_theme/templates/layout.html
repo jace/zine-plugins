@@ -2,6 +2,7 @@
   "http://www.w3.org/TR/html4/strict.dtd">
 <html lang="{{ cfg.language|e }}">
 <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   {%block titletags -%}
   <title>{% block title %}{% endblock %} &mdash; {{ cfg.blog_title|e }}</title>
   <meta name="DC.title" content="{{ self.title() }} &mdash; {{ cfg.blog_title|e }}">
@@ -9,14 +10,14 @@
   <link rel="stylesheet" type="text/css" href="{{ shared_url('zaiki_theme::960/reset.css') }}" media="screen">
   <link rel="stylesheet" type="text/css" href="{{ shared_url('zaiki_theme::960/grid.css') }}" media="screen">
   <link rel="stylesheet" type="text/css" href="{{ shared_url('zaiki_theme::zine.css') }}" media="screen">
-	<!--[if IE 6]><link rel="stylesheet" type="text/css" href="{{ shared_url('zaiki_theme::960/ie6.css') }}" media="screen">
+  <!--[if IE 6]><link rel="stylesheet" type="text/css" href="{{ shared_url('zaiki_theme::960/ie6.css') }}" media="screen">
                 <link rel="stylesheet" type="text/css" href="{{ shared_url('zaiki_theme::zine-ie.css') }}" media="screen"><![endif]-->
-	<!--[if gte IE 7]><link rel="stylesheet" type="text/css" href="{{ shared_url('zaiki_theme::960/ie.css') }}" media="screen">
+  <!--[if gte IE 7]><link rel="stylesheet" type="text/css" href="{{ shared_url('zaiki_theme::960/ie.css') }}" media="screen">
                 <link rel="stylesheet" type="text/css" href="{{ shared_url('zaiki_theme::zine-ie.css') }}" media="screen"><![endif]-->
   {{ get_page_metadata() }}
   <!-- Twitter widget -->
   <script type="text/javascript" src="{{ shared_url('zaiki_theme::js/jquery.twitter.js') }}"></script>
-	<script type="text/javascript" src="{{ shared_url('zaiki_theme::js/jquery.flickr-1.0.js') }}"></script>	
+  <script type="text/javascript" src="{{ shared_url('zaiki_theme::js/jquery.flickr-1.0.js') }}"></script>	
 </head>
 <body>
   <div id="header">
