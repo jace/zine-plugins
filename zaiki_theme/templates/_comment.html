@@ -1,8 +1,8 @@
 {% macro render_comment(comment, add_reply_link=false) %}
     <div class="comment{% if comment.is_pingback %} pingback{% endif %}{%
       if comment.blocked %} blocked{% endif %}{%
-      if comment.is_deleted %} deleted{% endif %} id="comment-{{ comment.id }}">
-      <div class="avatar"><img src="{{ comment|avatar|e }}"></div>
+      if comment.is_deleted %} deleted{% endif %}" id="comment-{{ comment.id }}">
+      <div class="avatar"><img src="{{ comment|avatar|e }}" alt="Avatar"></div>
       <div>
         <p class="meta">{% if comment.is_pingback %}{{ _("Pingback by") }}
           {% endif %}{% if comment.www
