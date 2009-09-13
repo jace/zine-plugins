@@ -5,7 +5,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   {%block titletags -%}
   <title>{% block title %}{% endblock %} &mdash; {{ cfg.blog_title|e }}</title>
-  <meta name="DC.title" content="{{ self.title() }} &mdash; {{ cfg.blog_title|e }}">
+  <meta name="DC.title" content="{{ self.title()|e }} &mdash; {{ cfg.blog_title|e }}">
   {%- endblock %}
   <link rel="stylesheet" type="text/css" href="{{ shared_url('zaiki_theme::960/reset.css') }}" media="screen">
   <link rel="stylesheet" type="text/css" href="{{ shared_url('zaiki_theme::960/grid.css') }}" media="screen">
@@ -15,9 +15,12 @@
   <!--[if gte IE 7]><link rel="stylesheet" type="text/css" href="{{ shared_url('zaiki_theme::960/ie.css') }}" media="screen">
                 <link rel="stylesheet" type="text/css" href="{{ shared_url('zaiki_theme::zine-ie.css') }}" media="screen"><![endif]-->
   {{ get_page_metadata() }}
-  <!-- Twitter widget -->
+  <!-- Widgets -->
   <script type="text/javascript" src="{{ shared_url('zaiki_theme::js/jquery.twitter.js') }}"></script>
   <script type="text/javascript" src="{{ shared_url('zaiki_theme::js/jquery.flickr-1.0.js') }}"></script>	
+  {% if cfg['zaiki_theme/dopplr_script_id'] -%}
+    <script type="text/javascript" src="http://www.dopplr.com/blogbadge/script/{{ cfg['zaiki_theme/dopplr_script_id']|e }}"></script>
+  {%- endif %}
 </head>
 <body>
   <div id="header">

@@ -94,18 +94,20 @@ a:hover {
     background-color: #ccc;
 }
 
+/* Declared !important for the dopplr badge */
 .widget a {
-    color: #005599;
-    border-bottom: 0;
-    text-decoration: none;
+    color: #005599 !important;
+    border-bottom: 0 !important;
+    text-decoration: none !important;
 }
 
 .widget a:hover, .tag-cloud a:hover {
-    border-bottom: 1px solid #999;
+    border-bottom: 1px solid #999 !important;
 }
 
+/* Declared !important to compensate for the .widget a above */
 .widget h3 a {
-    color: black;
+    color: black !important;
 }
 
 h1 a, h2 a, h3 a, h4 a, h5 a, h6 a, .tag-cloud a {
@@ -585,6 +587,71 @@ div.pagination a:hover {
 	color: #fff;
 	background-color: #888; */
 }
+
+/* All Dopplr CSS settings must be declared !important as the widget
+   inserts its own stylesheets into the head when rendering. */
+#dopplr-blog-badge {
+    max-width: none !important;
+}
+
+.dopplr-badge {
+    font-family: inherit !important;
+    color: inherit !important;
+    background: inherit !important;
+    border: 0 !important;
+    padding: 0 !important;
+}    
+
+#dopplr-logo {
+    display: none !important;
+}
+
+.dopplr-badge a:hover {
+    background: inherit !important;
+}
+
+.dopplr-badge p {
+    font-family: inherit !important;
+    margin:0; padding:0;
+    font-size: 100% !important;
+}
+
+.dopplr-badge .trips {
+    list-style-type: circle;
+    margin: .6em 0 0 1.6em !important;
+    padding: 0 !important;
+    font-size: inherit !important;
+}
+
+.dopplr-badge .trips li {
+    margin:0 0 0.4em 0 !important;
+    line-height: inherit !important;
+    font-size: 0.9em !important;
+}
+
+.dopplr-badge .trips .tripmonth {
+    color: #4d4d4d; /* Check this */
+}
+
+.dopplr-badge abbr {
+    border-bottom: none;
+}
+
+#dopplr-join {
+    text-align:right;
+    margin:0 0 .5pt 0;
+    font-size:9pt;
+}
+
+#dopplr-join a {
+    font-size:8.5pt;
+}
+
+#dopplr-join em {
+    font-size:1.1em;
+    font-style:normal;
+}
+
 
 /* Embedded fonts using CSS3 */
 @font-face {

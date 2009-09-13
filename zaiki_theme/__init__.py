@@ -56,6 +56,11 @@ class TwitterWidget(SimpleWidget):
     template = 'widgets/twitter_widget.html'
 
 
+class DopplrWidget(SimpleWidget):
+    name = 'dopplr_widget'
+    template = 'widgets/dopplr_widget.html'
+
+
 class ZaikiTheme(Theme):
     """
     Theme helper for the Zaiki theme.
@@ -108,6 +113,7 @@ def setup(app, plugin):
     app.add_widget(BlurbWidget)
     app.add_widget(FlickrWidget)
     app.add_widget(TwitterWidget)
+    app.add_widget(DopplrWidget)
 
     # Flickr widget
     app.add_config_var('zaiki_theme/flickr_machinetag', forms.TextField())
@@ -123,3 +129,8 @@ def setup(app, plugin):
 
     # Twitter widget
     app.add_config_var('zaiki_theme/twitter_user', forms.TextField())
+
+    # Dopplr widget
+    app.add_config_var('zaiki_theme/dopplr_user', forms.TextField(default=''))
+    app.add_config_var('zaiki_theme/dopplr_script_id', forms.TextField(
+                       default=''))
