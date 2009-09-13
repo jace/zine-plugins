@@ -110,6 +110,10 @@ a:hover {
     color: black !important;
 }
 
+.widget .category-list {
+    margin-bottom: 0;
+}
+
 h1 a, h2 a, h3 a, h4 a, h5 a, h6 a, .tag-cloud a {
     text-decoration: none;
     border-bottom: 0;
@@ -630,7 +634,8 @@ div.pagination a:hover {
 }
 
 .dopplr-badge .trips .tripmonth {
-    color: #4d4d4d; /* Check this */
+    color: #4d4d4d !important;
+    font-size: 100% !important;
 }
 
 .dopplr-badge abbr {
