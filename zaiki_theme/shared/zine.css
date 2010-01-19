@@ -201,6 +201,7 @@ span.amp {
 
 div.intro {
     border-bottom: 1px dashed #ccc;
+    margin-bottom: 1em;
 }
 
 form.comments textarea {
@@ -390,6 +391,10 @@ table.listing {
 .listing tfoot th, .listing tfoot td {
     border-top: 1px solid #8cacbb;
     background: #eef3f5;
+}
+
+.listing th.num, .listing td.num {
+    text-align: right;
 }
 
 /* Comments */
