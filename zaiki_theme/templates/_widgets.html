@@ -4,6 +4,9 @@
   {{ widgets.dopplr_widget(show_title=true) }}
 {%- endif %}
 {{ widgets.twitter_widget(show_title=true) }}
+{% if cfg['zaiki_theme/dailymile_user'] -%}
+  {{ widgets.dailymile_widget(show_title=true) }}
+{%- endif %}
 {{ widgets.flickr_widget(show_title=true) }}
 {% if request.user.is_manager %}
 <div class="widget" id="administration">

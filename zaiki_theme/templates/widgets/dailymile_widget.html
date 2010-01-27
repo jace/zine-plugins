@@ -1,0 +1,5 @@
+{% extends 'widgets/base.html' %}
+{% block title %}{{ _('Training') }}{% endblock %}
+{% block body %}
+<script src="http://www.dailymile.com/people/{{ cfg['zaiki_theme/dailymile_user']|e }}/training/widget.js?hide_border=true" type="text/javascript"></script><noscript><a href="http://www.dailymile.com/people/{{ cfg['zaiki_theme/dailymile_user']|e }}?utm_medium=api&utm_source=training_widget" title="Training Log"><img alt="Training Log" src="http://www.dailymile.com/images/badges/dailymile_badge_180x60_orange.gif" style="border: 0;" /></a></noscript>
+{% endblock %}

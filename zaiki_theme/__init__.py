@@ -61,6 +61,11 @@ class DopplrWidget(SimpleWidget):
     template = 'widgets/dopplr_widget.html'
 
 
+class DailymileWidget(SimpleWidget):
+    name = 'dailymile_widget'
+    template = 'widgets/dailymile_widget.html'
+
+
 class ZaikiTheme(Theme):
     """
     Theme helper for the Zaiki theme.
@@ -133,4 +138,8 @@ def setup(app, plugin):
     # Dopplr widget
     app.add_config_var('zaiki_theme/dopplr_user', forms.TextField(default=''))
     app.add_config_var('zaiki_theme/dopplr_script_id', forms.TextField(
+                       default=''))
+
+    # Dailymile widget
+    app.add_config_var('zaiki_theme/dailymile_user', forms.TextField(
                        default=''))
