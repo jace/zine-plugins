@@ -119,6 +119,7 @@ def setup(app, plugin):
     app.add_widget(FlickrWidget)
     app.add_widget(TwitterWidget)
     app.add_widget(DopplrWidget)
+    app.add_widget(DailymileWidget)
 
     # Flickr widget
     app.add_config_var('zaiki_theme/flickr_machinetag', forms.TextField())
